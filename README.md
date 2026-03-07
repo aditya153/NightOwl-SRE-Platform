@@ -35,7 +35,7 @@
    K8s   GitHub  Prom  Slack Jira Terraform ...
 ```
 
-> 📄 See the [animated architecture diagram](docs/diagrams/architecture-animated.html) for a visual walkthrough.
+> 🎬 **[View Live Architecture Diagram](https://aditya153.github.io/NightOwl-SRE-Platform/docs/diagrams/architecture-animated.html)** — Interactive animated walkthrough of the platform
 
 ## Tech Stack
 
