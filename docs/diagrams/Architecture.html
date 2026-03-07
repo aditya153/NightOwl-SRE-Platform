@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NightOwl — System Architecture</title>
+    <meta name="description" content="Interactive architecture diagram for the NightOwl Autonomous SRE Platform">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f35;
+            --bg-card-hover: #222842;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-pink: #ec4899;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --glow-blue: rgba(59, 130, 246, 0.15);
+            --glow-purple: rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background animated gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Navigation tabs */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 10px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Tab content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Architecture section */
+        .arch-section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Architecture Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .flow-layer {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flow-layer:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.05);
+            transform: scale(1.005);
+        }
+
+        .flow-layer .layer-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .flow-layer .layer-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(100, 116, 139, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .flow-layer .layer-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .flow-layer .layer-port {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent-cyan);
+            margin-left: auto;
+            background: rgba(6, 182, 212, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .flow-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .flow-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .flow-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .flow-item .item-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .flow-item .item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .flow-item .item-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Arrow connector */
+        .flow-arrow {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .flow-arrow svg {
+            width: 24px;
+            height: 32px;
+        }
+
+        .flow-arrow .arrow-line {
+            stroke: var(--accent-blue);
+            stroke-width: 2;
+            stroke-dasharray: 6, 4;
+            animation: dashFlow 1s linear infinite;
+        }
+
+        .flow-arrow .arrow-head {
+            fill: var(--accent-blue);
+        }
+
+        @keyframes dashFlow {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }
+
+        /* Agent cards */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .agent-card:nth-child(1)::before {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+        }
+
+        .agent-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+        }
+
+        .agent-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+        }
+
+        .agent-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-red));
+        }
+
+        .agent-card:nth-child(5)::before {
+            background: linear-gradient(90deg, var(--accent-red), var(--accent-pink));
+        }
+
+        .agent-card:nth-child(6)::before {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+        }
+
+        .agent-card:nth-child(7)::before {
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+        }
+
+        .agent-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .agent-card .agent-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .agent-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .agent-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .agent-card .capabilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .agent-card .cap-tag {
+            font-size: 11px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        /* Incident Flow Steps */
+        .incident-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.05);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-card:nth-child(1) .step-num {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+        }
+
+        .step-card:nth-child(3) .step-num {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+        }
+
+        .step-card:nth-child(5) .step-num {
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+        }
+
+        .step-card:nth-child(7) .step-num {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+        }
+
+        .step-card:nth-child(9) .step-num {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .step-agent {
+            font-size: 13px;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .step-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .step-detail {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .step-detail .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .step-detail .value {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Database Schema Cards */
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .db-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .db-card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .db-card-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .db-card-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .db-card-body {
+            padding: 16px 20px;
+        }
+
+        .db-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .db-field:last-child {
+            border-bottom: none;
+        }
+
+        .db-field-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .db-field-type {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .db-field-key {
+            font-size: 10px;
+            color: var(--accent-orange);
+            padding: 2px 6px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        /* Port table */
+        .port-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .port-table th {
+            text-align: left;
+            padding: 14px 20px;
+            background: rgba(59, 130, 246, 0.05);
+            color: var(--accent-blue);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .port-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+        }
+
+        .port-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .port-table .port-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        .port-table .proto-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .proto-http {
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .proto-tcp {
+            color: var(--accent-orange);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .proto-ws {
+            color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .flow-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .db-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="badge">🦉 System Architecture</div>
+            <h1>NightOwl Platform</h1>
+            <p>AI-powered autonomous SRE platform — complete system architecture, data flows, and infrastructure design.
+            </p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="showTab('overview')">🏗️ Overview</button>
+            <button class="tab-btn" onclick="showTab('agents')">🤖 AI Agents</button>
+            <button class="tab-btn" onclick="showTab('workflow')">⚡ Incident Flow</button>
+            <button class="tab-btn" onclick="showTab('database')">🗄️ Database</button>
+            <button class="tab-btn" onclick="showTab('ports')">🔌 Service Ports</button>
+        </nav>
+
+        <!-- TAB: Overview -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="flow-diagram">
+                <!-- Event Sources -->
+                <div class="flow-layer">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 1</span>
+                        <span class="layer-title">📡 Event Sources</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">🐙</div>
+                            <div class="item-name">GitHub Webhooks</div>
+                            <div class="item-desc">Push, PR, security events</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📊</div>
+                            <div class="item-name">Grafana Alerts</div>
+                            <div class="item-desc">Metric threshold triggers</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">☸️</div>
+                            <div class="item-name">Kubernetes Events</div>
+                            <div class="item-desc">Pod, node, deployment events</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">💬</div>
+                            <div class="item-name">Slack Commands</div>
+                            <div class="item-desc">ChatOps interactions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Event Dispatcher -->
+                <div class="flow-layer">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 2</span>
+                        <span class="layer-title">⚙️ Node.js Event Dispatcher</span>
+                        <span class="layer-port">:3001</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">📥</div>
+                            <div class="item-name">Webhook Receiver</div>
+                            <div class="item-desc">HTTP endpoint handlers</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🔐</div>
+                            <div class="item-name">Signature Validator</div>
+                            <div class="item-desc">HMAC verification</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🔄</div>
+                            <div class="item-name">Event Normalizer</div>
+                            <div class="item-desc">Unified event format</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📡</div>
+                            <div class="item-name">Socket.io Emitter</div>
+                            <div class="item-desc">Real-time UI updates</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Kafka -->
+                <div class="flow-layer" style="border-color: rgba(245, 158, 11, 0.2);">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 3</span>
+                        <span class="layer-title">📨 Apache Kafka</span>
+                        <span class="layer-port">:9092</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">🚨</div>
+                            <div class="item-name">incidents</div>
+                            <div class="item-desc">Alert & error events</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🚀</div>
+                            <div class="item-name">deployments</div>
+                            <div class="item-desc">CI/CD events</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📋</div>
+                            <div class="item-name">compliance</div>
+                            <div class="item-desc">Policy audit events</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🔧</div>
+                            <div class="item-name">remediations</div>
+                            <div class="item-desc">Auto-fix actions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Agent Gateway -->
+                <div class="flow-layer">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 4</span>
+                        <span class="layer-title">🧠 FastAPI Agent Gateway</span>
+                        <span class="layer-port">:8000</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">📥</div>
+                            <div class="item-name">Kafka Consumer</div>
+                            <div class="item-desc">Message processing</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🎯</div>
+                            <div class="item-name">Crew Orchestrator</div>
+                            <div class="item-desc">CrewAI task management</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">♻️</div>
+                            <div class="item-name">Agent Lifecycle</div>
+                            <div class="item-desc">Spawn, monitor, teardown</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🌐</div>
+                            <div class="item-name">REST API</div>
+                            <div class="item-desc">Dashboard endpoints</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- CrewAI Agents -->
+                <div class="flow-layer" style="border-color: rgba(139, 92, 246, 0.2);">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 5</span>
+                        <span class="layer-title">🤖 CrewAI Agent Swarm</span>
+                    </div>
+                    <div class="flow-items" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="flow-item">
+                            <div class="item-icon">🔍</div>
+                            <div class="item-name">Triage</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📄</div>
+                            <div class="item-name">Log Analyst</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📈</div>
+                            <div class="item-name">Metric Correlator</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🔧</div>
+                            <div class="item-name">Fixer</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-name">Security Auditor</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">✅</div>
+                            <div class="item-name">Compliance</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📝</div>
+                            <div class="item-name">PostMortem</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- MCP Tool Server -->
+                <div class="flow-layer">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 6</span>
+                        <span class="layer-title">🔧 MCP Tool Server</span>
+                        <span class="layer-port">:8001</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">🐙</div>
+                            <div class="item-name">GitHub</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">☸️</div>
+                            <div class="item-name">Kubernetes</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📊</div>
+                            <div class="item-name">Prometheus</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">💬</div>
+                            <div class="item-name">Slack</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🎫</div>
+                            <div class="item-name">Jira</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🏗️</div>
+                            <div class="item-name">Terraform</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Data Layer -->
+                <div class="flow-layer" style="border-color: rgba(16, 185, 129, 0.2);">
+                    <div class="layer-header">
+                        <span class="layer-tag">LAYER 7</span>
+                        <span class="layer-title">💾 Data Layer</span>
+                    </div>
+                    <div class="flow-items">
+                        <div class="flow-item">
+                            <div class="item-icon">🐘</div>
+                            <div class="item-name">PostgreSQL</div>
+                            <div class="item-desc">Incidents, runs, audit</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">⚡</div>
+                            <div class="item-name">Redis</div>
+                            <div class="item-desc">State, sessions, pub/sub</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">🧲</div>
+                            <div class="item-name">Qdrant</div>
+                            <div class="item-desc">Log embeddings, similarity</div>
+                        </div>
+                        <div class="flow-item">
+                            <div class="item-icon">📈</div>
+                            <div class="item-name">Prometheus</div>
+                            <div class="item-desc">Metrics, trends, history</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Agents -->
+        <div class="tab-content" id="tab-agents">
+            <div class="agent-grid">
+                <div class="agent-card">
+                    <div class="agent-icon">🔍</div>
+                    <h3>Triage Agent</h3>
+                    <p>The first responder. Assesses incoming alerts, determines severity, sets priority, and routes to
+                        appropriate agents.</p>
+                    <div class="capabilities">
+                        <span class="cap-tag">Severity Assessment</span>
+                        <span class="cap-tag">Priority Setting</span>
+                        <span class="cap-tag">Routing</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">📄</div>
+                    <h3>Log Analyst</h3>
+                    <p>Parses logs from Loki, identifies error patterns, and performs root cause analysis using log
+                        data.</p>
+                    <div class="capabilities">
+                        <span class="cap-tag">Log Parsing</span>
+                        <span class="cap-tag">Pattern Detection</span>
+                        <span class="cap-tag">RCA</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">📈</div>
+                    <h3>Metric Correlator</h3>
+                    <p>Queries Prometheus metrics, correlates time-series data, and detects anomalies across services.
+                    </p>
+                    <div class="capabilities">
+                        <span class="cap-tag">PromQL Queries</span>
+                        <span class="cap-tag">Correlation</span>
+                        <span class="cap-tag">Anomaly Detection</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">🔧</div>
+                    <h3>Fixer Agent</h3>
+                    <p>Executes remediation actions — restart deployments, rollback releases, scale resources.</p>
+                    <div class="capabilities">
+                        <span class="cap-tag">Restart</span>
+                        <span class="cap-tag">Rollback</span>
+                        <span class="cap-tag">Scale</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">🛡️</div>
+                    <h3>Security Auditor</h3>
+                    <p>Performs SAST scans, CVE detection, secret scanning, and vulnerability assessment.</p>
+                    <div class="capabilities">
+                        <span class="cap-tag">SAST</span>
+                        <span class="cap-tag">CVE Scan</span>
+                        <span class="cap-tag">Secret Detection</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">✅</div>
+                    <h3>Compliance Checker</h3>
+                    <p>Validates infrastructure against SOC2, GDPR, and custom policies. Detects configuration drift.
+                    </p>
+                    <div class="capabilities">
+                        <span class="cap-tag">Policy Check</span>
+                        <span class="cap-tag">SOC2/GDPR</span>
+                        <span class="cap-tag">Drift Detection</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon">📝</div>
+                    <h3>PostMortem Writer</h3>
+                    <p>Generates detailed incident reports including timelines, root cause, resolution, and follow-up
+                        actions.</p>
+                    <div class="capabilities">
+                        <span class="cap-tag">Report Gen</span>
+                        <span class="cap-tag">Timeline</span>
+                        <span class="cap-tag">RCA Doc</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Incident Workflow -->
+        <div class="tab-content" id="tab-workflow">
+            <div class="incident-steps">
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-num">1</div>
+                        <div>
+                            <div class="step-title">Detect</div>
+                            <div class="step-agent">Triage Agent</div>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-detail">
+                            <div class="label">Input</div>
+                            <div class="value">Grafana Alert: "High Memory 95%"</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Tool</div>
+                            <div class="value">prometheus_query()</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Output</div>
+                            <div class="value">severity=CRITICAL</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Action</div>
+                            <div class="value">→ INVESTIGATE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-num">2</div>
+                        <div>
+                            <div class="step-title">Investigate</div>
+                            <div class="step-agent">Log Analyst + Metric Correlator</div>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-detail">
+                            <div class="label">Log Analysis</div>
+                            <div class="value">loki_query('{app="api-server"}')</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Finding</div>
+                            <div class="value">OOM Error ×47 in /api/reports</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Metric Correlation</div>
+                            <div class="value">rate(http_requests_total[5m])</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Finding</div>
+                            <div class="value">Traffic spike 10m ago</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-num">3</div>
+                        <div>
+                            <div class="step-title">Fix</div>
+                            <div class="step-agent">Fixer Agent</div>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-detail">
+                            <div class="label">Decision</div>
+                            <div class="value">Restart deployment</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Tool</div>
+                            <div class="value">k8s_restart_deployment()</div>
+                        </div>
+                        <div class="step-detail" style="grid-column: 1 / -1;">
+                            <div class="label">Verification</div>
+                            <div class="value">kubernetes_get_pods() → All pods healthy ✅</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-num">4</div>
+                        <div>
+                            <div class="step-title">Document</div>
+                            <div class="step-agent">PostMortem Writer Agent</div>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-detail">
+                            <div class="label">Root Cause</div>
+                            <div class="value">Memory leak in /api/reports</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Impact</div>
+                            <div class="value">95% memory, potential OOM crash</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Resolution</div>
+                            <div class="value">Deployment restarted</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Follow-up</div>
+                            <div class="value">Review memory allocation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">
+                    <svg viewBox="0 0 24 32">
+                        <line class="arrow-line" x1="12" y1="0" x2="12" y2="24" />
+                        <polygon class="arrow-head" points="6,22 12,32 18,22" />
+                    </svg>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-num">5</div>
+                        <div>
+                            <div class="step-title">Notify</div>
+                            <div class="step-agent">Notifications</div>
+                        </div>
+                    </div>
+                    <div class="step-details">
+                        <div class="step-detail">
+                            <div class="label">Slack</div>
+                            <div class="value">#incidents channel updated</div>
+                        </div>
+                        <div class="step-detail">
+                            <div class="label">Dashboard</div>
+                            <div class="value">Real-time Socket.io update</div>
+                        </div>
+                        <div class="step-detail" style="grid-column: 1 / -1;">
+                            <div class="label">Total Time</div>
+                            <div class="value" style="color: #10b981; font-size: 16px;">~3-5 minutes (vs 45+ min manual)
+                                ⚡</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Database -->
+        <div class="tab-content" id="tab-database">
+            <div class="db-grid">
+                <!-- Incidents Table -->
+                <div class="db-card">
+                    <div class="db-card-header">
+                        <span>🗄️</span>
+                        <h3>incidents</h3>
+                    </div>
+                    <div class="db-card-body">
+                        <div class="db-field"><span class="db-field-name">id</span>
+                            <div><span class="db-field-type">UUID</span><span class="db-field-key">PK</span></div>
+                        </div>
+                        <div class="db-field"><span class="db-field-name">alert_id</span><span
+                                class="db-field-type">VARCHAR(255)</span></div>
+                        <div class="db-field"><span class="db-field-name">source</span><span
+                                class="db-field-type">VARCHAR(50)</span></div>
+                        <div class="db-field"><span class="db-field-name">severity</span><span
+                                class="db-field-type">VARCHAR(20)</span></div>
+                        <div class="db-field"><span class="db-field-name">status</span><span
+                                class="db-field-type">VARCHAR(30)</span></div>
+                        <div class="db-field"><span class="db-field-name">title</span><span
+                                class="db-field-type">TEXT</span></div>
+                        <div class="db-field"><span class="db-field-name">service</span><span
+                                class="db-field-type">VARCHAR(255)</span></div>
+                        <div class="db-field"><span class="db-field-name">root_cause</span><span
+                                class="db-field-type">TEXT</span></div>
+                        <div class="db-field"><span class="db-field-name">resolution</span><span
+                                class="db-field-type">TEXT</span></div>
+                        <div class="db-field"><span class="db-field-name">auto_resolved</span><span
+                                class="db-field-type">BOOLEAN</span></div>
+                        <div class="db-field"><span class="db-field-name">resolved_by</span><span
+                                class="db-field-type">VARCHAR(255)</span></div>
+                        <div class="db-field"><span class="db-field-name">created_at</span><span
+                                class="db-field-type">TIMESTAMPTZ</span></div>
+                        <div class="db-field"><span class="db-field-name">resolved_at</span><span
+                                class="db-field-type">TIMESTAMPTZ</span></div>
+                        <div class="db-field"><span class="db-field-name">metadata</span><span
+                                class="db-field-type">JSONB</span></div>
+                    </div>
+                </div>
+
+                <!-- Agent Executions Table -->
+                <div class="db-card">
+                    <div class="db-card-header">
+                        <span>🤖</span>
+                        <h3>agent_executions</h3>
+                    </div>
+                    <div class="db-card-body">
+                        <div class="db-field"><span class="db-field-name">id</span>
+                            <div><span class="db-field-type">UUID</span><span class="db-field-key">PK</span></div>
+                        </div>
+                        <div class="db-field"><span class="db-field-name">incident_id</span>
+                            <div><span class="db-field-type">UUID</span><span class="db-field-key">FK</span></div>
+                        </div>
+                        <div class="db-field"><span class="db-field-name">agent_name</span><span
+                                class="db-field-type">VARCHAR(100)</span></div>
+                        <div class="db-field"><span class="db-field-name">input_data</span><span
+                                class="db-field-type">JSONB</span></div>
+                        <div class="db-field"><span class="db-field-name">output_data</span><span
+                                class="db-field-type">JSONB</span></div>
+                        <div class="db-field"><span class="db-field-name">tool_calls</span><span
+                                class="db-field-type">JSONB</span></div>
+                        <div class="db-field"><span class="db-field-name">tokens_used</span><span
+                                class="db-field-type">INTEGER</span></div>
+                        <div class="db-field"><span class="db-field-name">duration_ms</span><span
+                                class="db-field-type">INTEGER</span></div>
+                        <div class="db-field"><span class="db-field-name">status</span><span
+                                class="db-field-type">VARCHAR(20)</span></div>
+                        <div class="db-field"><span class="db-field-name">error_message</span><span
+                                class="db-field-type">TEXT</span></div>
+                        <div class="db-field"><span class="db-field-name">created_at</span><span
+                                class="db-field-type">TIMESTAMPTZ</span></div>
+                    </div>
+                </div>
+
+                <!-- Remediations Table -->
+                <div class="db-card">
+                    <div class="db-card-header">
+                        <span>🔧</span>
+                        <h3>remediations</h3>
+                    </div>
+                    <div class="db-card-body">
+                        <div class="db-field"><span class="db-field-name">id</span>
+                            <div><span class="db-field-type">UUID</span><span class="db-field-key">PK</span></div>
+                        </div>
+                        <div class="db-field"><span class="db-field-name">incident_id</span>
+                            <div><span class="db-field-type">UUID</span><span class="db-field-key">FK</span></div>
+                        </div>
+                        <div class="db-field"><span class="db-field-name">action_type</span><span
+                                class="db-field-type">VARCHAR(50)</span></div>
+                        <div class="db-field"><span class="db-field-name">target</span><span
+                                class="db-field-type">VARCHAR(255)</span></div>
+                        <div class="db-field"><span class="db-field-name">namespace</span><span
+                                class="db-field-type">VARCHAR(100)</span></div>
+                        <div class="db-field"><span class="db-field-name">status</span><span
+                                class="db-field-type">VARCHAR(20)</span></div>
+                        <div class="db-field"><span class="db-field-name">before_state</span><span
+                                class="db-field-type">JSONB</span></div>
+                        <div class="db-field"><span class="db-field-name">after_state</span><span
+                                class="db-field-type">JSONB</span></div>
+                        <div class="db-field"><span class="db-field-name">created_at</span><span
+                                class="db-field-type">TIMESTAMPTZ</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relationships -->
+            <div
+                style="margin-top: 32px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+                <h3 style="margin-bottom: 16px; font-size: 16px;">🔗 Relationships</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+                    <div
+                        style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 14px 20px; flex: 1; min-width: 250px;">
+                        <div
+                            style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-cyan);">
+                            incidents (1) → (N) agent_executions</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Each incident has
+                            multiple agent runs</div>
+                    </div>
+                    <div
+                        style="background: rgba(255,255,255,0.03); border-radius: 10px; padding: 14px 20px; flex: 1; min-width: 250px;">
+                        <div
+                            style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-cyan);">
+                            incidents (1) → (N) remediations</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Each incident may
+                            trigger multiple fixes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Ports -->
+        <div class="tab-content" id="tab-ports">
+            <div
+                style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;">
+                <table class="port-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Port</th>
+                            <th>Protocol</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🖥️ React Dashboard</td>
+                            <td><span class="port-badge">3000</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>Frontend UI with real-time updates</td>
+                        </tr>
+                        <tr>
+                            <td>⚙️ Event Dispatcher</td>
+                            <td><span class="port-badge">3001</span></td>
+                            <td><span class="proto-badge proto-ws">HTTP/WS</span></td>
+                            <td>Node.js webhook receiver + Socket.io</td>
+                        </tr>
+                        <tr>
+                            <td>🧠 Agent Gateway</td>
+                            <td><span class="port-badge">8000</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>FastAPI + CrewAI orchestration</td>
+                        </tr>
+                        <tr>
+                            <td>🔧 MCP Server</td>
+                            <td><span class="port-badge">8001</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>MCP Tool Server endpoints</td>
+                        </tr>
+                        <tr>
+                            <td>🐘 PostgreSQL</td>
+                            <td><span class="port-badge">5432</span></td>
+                            <td><span class="proto-badge proto-tcp">TCP</span></td>
+                            <td>Primary relational database</td>
+                        </tr>
+                        <tr>
+                            <td>⚡ Redis</td>
+                            <td><span class="port-badge">6379</span></td>
+                            <td><span class="proto-badge proto-tcp">TCP</span></td>
+                            <td>Cache + pub/sub + sessions</td>
+                        </tr>
+                        <tr>
+                            <td>📨 Kafka</td>
+                            <td><span class="port-badge">9092</span></td>
+                            <td><span class="proto-badge proto-tcp">TCP</span></td>
+                            <td>Event streaming / message queue</td>
+                        </tr>
+                        <tr>
+                            <td>📊 Prometheus</td>
+                            <td><span class="port-badge">9090</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>Metrics collection & querying</td>
+                        </tr>
+                        <tr>
+                            <td>📈 Grafana</td>
+                            <td><span class="port-badge">3002</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>Monitoring dashboards</td>
+                        </tr>
+                        <tr>
+                            <td>🧲 Qdrant</td>
+                            <td><span class="port-badge">6333</span></td>
+                            <td><span class="proto-badge proto-http">HTTP</span></td>
+                            <td>Vector database for embeddings</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer"></footer>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Show selected
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

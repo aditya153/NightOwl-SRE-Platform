@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NightOwl — Complete Documentation</title>
+    <meta name="description" content="Complete documentation for the NightOwl Autonomous SRE Platform">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --bg2: #111827;
+            --card: #1a1f35;
+            --card-h: #222842;
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --pink: #ec4899;
+            --t1: #f1f5f9;
+            --t2: #94a3b8;
+            --t3: #64748b;
+            --border: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--t1);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, .06) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, .06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .hdr {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hdr .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, .12), rgba(139, 92, 246, .12));
+            border: 1px solid rgba(59, 130, 246, .2);
+            border-radius: 100px;
+            padding: 8px 20px;
+            font-size: 12px;
+            color: var(--cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .hdr h1 {
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f1f5f9, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .hdr p {
+            font-size: 17px;
+            color: var(--t2);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Sidebar + Content Layout */
+        .layout {
+            display: flex;
+            gap: 32px;
+        }
+
+        .sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 24px;
+            align-self: flex-start;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 16px;
+            color: var(--t2);
+            text-decoration: none;
+            font-size: 13px;
+            border-left: 2px solid transparent;
+            transition: all .2s;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: var(--t1);
+            border-left-color: var(--blue);
+            background: rgba(59, 130, 246, .06);
+        }
+
+        .sidebar .cat {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--t3);
+            padding: 16px 16px 6px;
+            font-weight: 700;
+        }
+
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Sections */
+        .sec {
+            margin-bottom: 48px;
+            scroll-margin-top: 24px;
+        }
+
+        .sec h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sec h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            color: var(--cyan);
+        }
+
+        .sec p,
+        .sec li {
+            font-size: 14px;
+            color: var(--t2);
+            line-height: 1.7;
+        }
+
+        .sec ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .sec li {
+            margin-bottom: 6px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 16px;
+            transition: all .3s;
+        }
+
+        .card:hover {
+            border-color: rgba(59, 130, 246, .25);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .2);
+        }
+
+        .card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .card p {
+            font-size: 13px;
+        }
+
+        /* Grid */
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .grid3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin: 2px;
+        }
+
+        .tag-blue {
+            background: rgba(59, 130, 246, .1);
+            color: var(--blue);
+            border: 1px solid rgba(59, 130, 246, .15);
+        }
+
+        .tag-purple {
+            background: rgba(139, 92, 246, .1);
+            color: var(--purple);
+        }
+
+        .tag-green {
+            background: rgba(16, 185, 129, .1);
+            color: var(--green);
+        }
+
+        .tag-orange {
+            background: rgba(245, 158, 11, .1);
+            color: var(--orange);
+        }
+
+        /* Code */
+        pre {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--cyan);
+        }
+
+        pre code {
+            color: var(--t2);
+        }
+
+        /* Table */
+        .tbl {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .tbl th {
+            text-align: left;
+            padding: 12px 18px;
+            background: rgba(59, 130, 246, .05);
+            color: var(--blue);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tbl td {
+            padding: 12px 18px;
+            border-top: 1px solid rgba(255, 255, 255, .04);
+            font-size: 13px;
+        }
+
+        .tbl tr:hover td {
+            background: rgba(255, 255, 255, .02);
+        }
+
+        /* Phase */
+        .phase {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .phase-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .phase-done {
+            background: var(--green);
+            color: #000;
+        }
+
+        .phase-todo {
+            background: var(--border);
+            color: var(--t3);
+        }
+
+        .phase-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .phase-status {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        /* Alert box */
+        .alert {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            font-size: 13px;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, .08);
+            border-left: 3px solid var(--blue);
+        }
+
+        .alert-warn {
+            background: rgba(245, 158, 11, .08);
+            border-left: 3px solid var(--orange);
+        }
+
+        /* Footer */
+        .ftr {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--t3);
+            font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+
+            .layout {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="hdr">
+            <div class="badge">📖 Complete Documentation</div>
+            <h1>NightOwl Platform</h1>
+            <p>AI-powered autonomous SRE platform that detects, diagnoses, fixes, and documents incidents automatically.
+            </p>
+        </header>
+
+        <div class="layout">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="cat">Overview</div>
+                <a href="#intro" class="active">Introduction</a>
+                <a href="#stack">Tech Stack</a>
+                <a href="#structure">Project Structure</a>
+                <div class="cat">Architecture</div>
+                <a href="#services">Services</a>
+                <a href="#agents">AI Agents</a>
+                <a href="#data">Data Layer</a>
+                <a href="#kafka">Kafka Topics</a>
+                <div class="cat">Operations</div>
+                <a href="#setup">Quick Start</a>
+                <a href="#docker">Docker Config</a>
+                <a href="#env">Environment</a>
+                <a href="#monitoring">Monitoring</a>
+                <div class="cat">Development</div>
+                <a href="#phases">Dev Phases</a>
+                <a href="#schema">DB Schema</a>
+                <a href="#api">API Reference</a>
+            </nav>
+
+            <!-- Content -->
+            <main class="content">
+                <!-- Introduction -->
+                <section class="sec" id="intro">
+                    <h2>🛡️ Introduction</h2>
+                    <p>NightOwl is an autonomous Site Reliability Engineering (SRE) platform that leverages AI agents to
+                        handle the full incident lifecycle — from detection to resolution and documentation — reducing
+                        MTTR from 45+ minutes to 3-5 minutes.</p>
+                    <div class="alert alert-info">
+                        <strong>Key Value:</strong> NightOwl replaces manual on-call toil with intelligent, autonomous
+                        agents that collaborate in real-time to diagnose and fix production incidents.
+                    </div>
+                    <h3>Core Capabilities</h3>
+                    <ul>
+                        <li><strong>Automated Detection:</strong> Ingests alerts from Grafana, GitHub, Kubernetes, and
+                            Slack</li>
+                        <li><strong>AI-Powered Diagnosis:</strong> Multi-agent system using CrewAI for root cause
+                            analysis</li>
+                        <li><strong>Autonomous Remediation:</strong> Executes fixes via MCP tools (restart, rollback,
+                            scale)</li>
+                        <li><strong>Auto-Documentation:</strong> Generates post-mortems with timelines and RCA</li>
+                        <li><strong>Real-time Dashboard:</strong> React UI with Socket.io for live incident tracking
+                        </li>
+                        <li><strong>Compliance & Security:</strong> SOC2/GDPR auditing and CVE scanning</li>
+                    </ul>
+                </section>
+
+                <!-- Tech Stack -->
+                <section class="sec" id="stack">
+                    <h2>🛠️ Tech Stack</h2>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>Technology</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Frontend</td>
+                                <td>React + Vite + Tailwind</td>
+                                <td>Real-time dashboard UI</td>
+                            </tr>
+                            <tr>
+                                <td>Event Handler</td>
+                                <td>Node.js + Express + Socket.io</td>
+                                <td>Webhook ingestion & real-time events</td>
+                            </tr>
+                            <tr>
+                                <td>AI Gateway</td>
+                                <td>FastAPI + CrewAI + LangChain</td>
+                                <td>Agent orchestration & lifecycle</td>
+                            </tr>
+                            <tr>
+                                <td>LLM</td>
+                                <td>OpenRouter (gpt-oss-20b:free)</td>
+                                <td>AI reasoning engine</td>
+                            </tr>
+                            <tr>
+                                <td>Tools</td>
+                                <td>MCP Protocol</td>
+                                <td>Standardized tool interface</td>
+                            </tr>
+                            <tr>
+                                <td>Queue</td>
+                                <td>Apache Kafka</td>
+                                <td>Event streaming & decoupling</td>
+                            </tr>
+                            <tr>
+                                <td>Cache</td>
+                                <td>Redis</td>
+                                <td>State, sessions, pub/sub</td>
+                            </tr>
+                            <tr>
+                                <td>Database</td>
+                                <td>PostgreSQL</td>
+                                <td>Incidents, audit trail</td>
+                            </tr>
+                            <tr>
+                                <td>Vector DB</td>
+                                <td>Qdrant</td>
+                                <td>Log embeddings & similarity search</td>
+                            </tr>
+                            <tr>
+                                <td>Monitoring</td>
+                                <td>Prometheus + Grafana</td>
+                                <td>Metrics & dashboards</td>
+                            </tr>
+                            <tr>
+                                <td>Logging</td>
+                                <td>Loki</td>
+                                <td>Centralized log aggregation</td>
+                            </tr>
+                            <tr>
+                                <td>Tracing</td>
+                                <td>Jaeger</td>
+                                <td>Distributed tracing</td>
+                            </tr>
+                            <tr>
+                                <td>CI/CD</td>
+                                <td>GitHub Actions</td>
+                                <td>Automated pipelines</td>
+                            </tr>
+                            <tr>
+                                <td>Container</td>
+                                <td>Docker + Kubernetes</td>
+                                <td>Orchestration & deployment</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Project Structure -->
+                <section class="sec" id="structure">
+                    <h2>📦 Project Structure</h2>
+                    <pre><code>nightowl/
+├── services/
+│   ├── agent-gateway/      # FastAPI + CrewAI (Python)
+│   ├── event-dispatcher/   # Node.js webhooks + Socket.io
+│   └── mcp-server/         # MCP Tool Server (Python)
+├── frontend/               # React Dashboard (Vite + Tailwind)
+├── k8s/                    # Kubernetes manifests
+├── config/
+│   └── prometheus.yml      # Prometheus scrape config
+├── scripts/
+│   └── init-db.sql         # Database initialization
+├── docs/                   # Documentation
+│   ├── diagrams/           # Architecture diagrams
+│   ├── Architecture.html   # Interactive architecture view
+│   └── Documentation.html  # This file
+├── .github/workflows/      # CI/CD pipelines
+├── docker-compose.yml      # Local development stack
+├── .env.example            # Environment template
+└── README.md</code></pre>
+                </section>
+
+                <!-- Services -->
+                <section class="sec" id="services">
+                    <h2>⚙️ Services</h2>
+                    <div class="grid2">
+                        <div class="card">
+                            <h4>⚙️ Event Dispatcher <span class="tag tag-blue">:3001</span></h4>
+                            <p><strong>Node.js + Express + Socket.io</strong></p>
+                            <p>Receives webhooks from GitHub, Grafana, and Kubernetes. Validates signatures, normalizes
+                                events into a unified format, publishes to Kafka topics, and emits real-time updates via
+                                Socket.io.</p>
+                            <div style="margin-top:8px"><span class="tag tag-blue">Webhooks</span><span
+                                    class="tag tag-blue">Validation</span><span
+                                    class="tag tag-blue">Socket.io</span><span class="tag tag-blue">Kafka
+                                    Producer</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>🧠 Agent Gateway <span class="tag tag-blue">:8000</span></h4>
+                            <p><strong>FastAPI + CrewAI + LangChain</strong></p>
+                            <p>Consumes events from Kafka, orchestrates the CrewAI agent swarm, manages agent lifecycle
+                                (spawn, monitor, teardown), and exposes REST APIs for the dashboard.</p>
+                            <div style="margin-top:8px"><span class="tag tag-purple">CrewAI</span><span
+                                    class="tag tag-purple">Kafka Consumer</span><span class="tag tag-purple">REST
+                                    API</span><span class="tag tag-purple">LLM</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>🔧 MCP Tool Server <span class="tag tag-blue">:8001</span></h4>
+                            <p><strong>Python + MCP Protocol</strong></p>
+                            <p>Provides a standardized tool interface for AI agents to interact with external systems:
+                                Kubernetes, GitHub, Prometheus, Slack, Jira, and Terraform.</p>
+                            <div style="margin-top:8px"><span class="tag tag-green">K8s</span><span
+                                    class="tag tag-green">GitHub</span><span
+                                    class="tag tag-green">Prometheus</span><span class="tag tag-green">Slack</span><span
+                                    class="tag tag-green">Jira</span><span class="tag tag-green">Terraform</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>🖥️ React Dashboard <span class="tag tag-blue">:3000</span></h4>
+                            <p><strong>React + Vite + Tailwind CSS</strong></p>
+                            <p>Real-time incident dashboard showing live incidents, agent activity, control panel for
+                                manual overrides, and analytics for MTTR, resolution rates, and agent performance.</p>
+                            <div style="margin-top:8px"><span class="tag tag-orange">Real-time</span><span
+                                    class="tag tag-orange">Socket.io</span><span class="tag tag-orange">Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Agents -->
+                <section class="sec" id="agents">
+                    <h2>🤖 AI Agents (CrewAI Swarm)</h2>
+                    <p>NightOwl uses a multi-agent architecture powered by CrewAI. Each agent has a specialized role,
+                        specific tools, and collaborates with other agents to handle incidents end-to-end.</p>
+                    <div class="grid2" style="margin-top:16px">
+                        <div class="card">
+                            <h4>🔍 Triage Agent</h4>
+                            <p>First responder. Assesses severity (critical/warning/info), sets priority, and routes
+                                incidents to the appropriate investigation agents.</p>
+                            <div style="margin-top:8px"><span class="tag tag-blue">prometheus_query</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>📄 Log Analyst</h4>
+                            <p>Parses logs from Loki, identifies error patterns and frequencies, and performs root cause
+                                analysis from log data.</p>
+                            <div style="margin-top:8px"><span class="tag tag-blue">loki_query</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>📈 Metric Correlator</h4>
+                            <p>Queries Prometheus time-series data, correlates metrics across services, and detects
+                                anomalies that coincide with incidents.</p>
+                            <div style="margin-top:8px"><span class="tag tag-blue">prometheus_query</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>🔧 Fixer Agent</h4>
+                            <p>Executes remediation: restart deployments, rollback releases, scale resources. Verifies
+                                the fix by checking pod health.</p>
+                            <div style="margin-top:8px"><span class="tag tag-green">k8s_restart</span><span
+                                    class="tag tag-green">k8s_rollback</span><span
+                                    class="tag tag-green">k8s_scale</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>🛡️ Security Auditor</h4>
+                            <p>Performs static analysis (SAST), CVE detection, and secret scanning on codebases and
+                                container images.</p>
+                            <div style="margin-top:8px"><span class="tag tag-orange">github_scan</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>✅ Compliance Checker</h4>
+                            <p>Validates infrastructure against SOC2, GDPR, and custom policies. Detects configuration
+                                drift from desired state.</p>
+                            <div style="margin-top:8px"><span class="tag tag-orange">terraform_plan</span></div>
+                        </div>
+                        <div class="card">
+                            <h4>📝 PostMortem Writer</h4>
+                            <p>Generates detailed incident reports with root cause, impact, timeline, resolution steps,
+                                and follow-up action items.</p>
+                            <div style="margin-top:8px"><span class="tag tag-purple">report_gen</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Layer -->
+                <section class="sec" id="data">
+                    <h2>💾 Data Layer</h2>
+                    <div class="grid2">
+                        <div class="card">
+                            <h4>🐘 PostgreSQL <span class="tag tag-blue">:5432</span></h4>
+                            <p>Primary database. Stores incidents, agent executions, remediations, and full audit trail.
+                                Uses UUID primary keys and JSONB for flexible metadata.</p>
+                        </div>
+                        <div class="card">
+                            <h4>⚡ Redis <span class="tag tag-blue">:6379</span></h4>
+                            <p>In-memory cache for agent state, user sessions, and pub/sub for real-time event
+                                broadcasting across services.</p>
+                        </div>
+                        <div class="card">
+                            <h4>🧲 Qdrant <span class="tag tag-blue">:6333</span></h4>
+                            <p>Vector database for log embeddings. Enables similarity search to find related past
+                                incidents and learn from historical resolutions.</p>
+                        </div>
+                        <div class="card">
+                            <h4>📊 Prometheus <span class="tag tag-blue">:9090</span></h4>
+                            <p>Time-series metrics store. Scrapes metrics from all services (agent-gateway,
+                                event-dispatcher, mcp-server) every 15s.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Kafka Topics -->
+                <section class="sec" id="kafka">
+                    <h2>📨 Kafka Topics</h2>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Topic</th>
+                                <th>Producer</th>
+                                <th>Consumer</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>incidents</code></td>
+                                <td>Event Dispatcher</td>
+                                <td>Agent Gateway</td>
+                                <td>Alert and error events from all sources</td>
+                            </tr>
+                            <tr>
+                                <td><code>deployments</code></td>
+                                <td>Event Dispatcher</td>
+                                <td>Agent Gateway</td>
+                                <td>CI/CD deployment events from GitHub</td>
+                            </tr>
+                            <tr>
+                                <td><code>compliance</code></td>
+                                <td>Agent Gateway</td>
+                                <td>Agent Gateway</td>
+                                <td>Policy audit and compliance check events</td>
+                            </tr>
+                            <tr>
+                                <td><code>remediations</code></td>
+                                <td>Agent Gateway</td>
+                                <td>Dashboard</td>
+                                <td>Auto-fix action results and status</td>
+                            </tr>
+                            <tr>
+                                <td><code>notifications</code></td>
+                                <td>Agent Gateway</td>
+                                <td>Event Dispatcher</td>
+                                <td>Slack/email notification triggers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Quick Start -->
+                <section class="sec" id="setup">
+                    <h2>🚀 Quick Start</h2>
+                    <h3>Prerequisites</h3>
+                    <ul>
+                        <li>Docker & Docker Compose installed</li>
+                        <li>Git installed</li>
+                        <li>OpenRouter API key (free tier available)</li>
+                    </ul>
+                    <h3>Setup</h3>
+                    <pre><code># 1. Clone the repository
+git clone https://github.com/your-repo/nightowl.git
+cd nightowl
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# 3. Start all services
+docker-compose up -d
+
+# 4. Access the platform
+# Dashboard:        http://localhost:3000
+# API Gateway:      http://localhost:8000
+# Event Dispatcher: http://localhost:3001
+# Grafana:          http://localhost:3002 (admin/admin)</code></pre>
+                </section>
+
+                <!-- Docker -->
+                <section class="sec" id="docker">
+                    <h2>🐳 Docker Configuration</h2>
+                    <p>The <code>docker-compose.yml</code> defines <strong>11 services</strong> across a single bridge
+                        network (<code>nightowl-network</code>):</p>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Image / Build</th>
+                                <th>Port</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>frontend</td>
+                                <td><code>./frontend</code></td>
+                                <td>3000</td>
+                            </tr>
+                            <tr>
+                                <td>event-dispatcher</td>
+                                <td><code>./services/event-dispatcher</code></td>
+                                <td>3001</td>
+                            </tr>
+                            <tr>
+                                <td>agent-gateway</td>
+                                <td><code>./services/agent-gateway</code></td>
+                                <td>8000</td>
+                            </tr>
+                            <tr>
+                                <td>mcp-server</td>
+                                <td><code>./services/mcp-server</code></td>
+                                <td>8001</td>
+                            </tr>
+                            <tr>
+                                <td>postgres</td>
+                                <td><code>postgres:15-alpine</code></td>
+                                <td>5432</td>
+                            </tr>
+                            <tr>
+                                <td>redis</td>
+                                <td><code>redis:7-alpine</code></td>
+                                <td>6379</td>
+                            </tr>
+                            <tr>
+                                <td>qdrant</td>
+                                <td><code>qdrant/qdrant:latest</code></td>
+                                <td>6333</td>
+                            </tr>
+                            <tr>
+                                <td>zookeeper</td>
+                                <td><code>confluentinc/cp-zookeeper:7.5.0</code></td>
+                                <td>2181</td>
+                            </tr>
+                            <tr>
+                                <td>kafka</td>
+                                <td><code>confluentinc/cp-kafka:7.5.0</code></td>
+                                <td>9092</td>
+                            </tr>
+                            <tr>
+                                <td>prometheus</td>
+                                <td><code>prom/prometheus:latest</code></td>
+                                <td>9090</td>
+                            </tr>
+                            <tr>
+                                <td>grafana</td>
+                                <td><code>grafana/grafana:latest</code></td>
+                                <td>3002</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Environment -->
+                <section class="sec" id="env">
+                    <h2>🔐 Environment Variables</h2>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Description</th>
+                                <th>Required</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>OPENROUTER_API_KEY</code></td>
+                                <td>API key for OpenRouter LLM</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>OPENROUTER_MODEL</code></td>
+                                <td>LLM model name</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>DATABASE_URL</code></td>
+                                <td>PostgreSQL connection string</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>KAFKA_BROKERS</code></td>
+                                <td>Kafka broker addresses</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>REDIS_URL</code></td>
+                                <td>Redis connection URL</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>MCP_SERVER_URL</code></td>
+                                <td>MCP server endpoint</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>QDRANT_URL</code></td>
+                                <td>Qdrant vector DB URL</td>
+                                <td>✅</td>
+                            </tr>
+                            <tr>
+                                <td><code>GITHUB_TOKEN</code></td>
+                                <td>GitHub API token for MCP tools</td>
+                                <td>Optional</td>
+                            </tr>
+                            <tr>
+                                <td><code>SLACK_WEBHOOK_URL</code></td>
+                                <td>Slack webhook for notifications</td>
+                                <td>Optional</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Monitoring -->
+                <section class="sec" id="monitoring">
+                    <h2>📊 Monitoring & Observability</h2>
+                    <div class="grid2">
+                        <div class="card">
+                            <h4>📊 Prometheus</h4>
+                            <p>Scrapes metrics every 15s from agent-gateway (:8000), event-dispatcher (:3001), and
+                                mcp-server (:8001). Config at <code>config/prometheus.yml</code>.</p>
+                        </div>
+                        <div class="card">
+                            <h4>📈 Grafana</h4>
+                            <p>Visualization dashboards at <code>:3002</code>. Default credentials: admin/admin.
+                                Pre-configured to use Prometheus as data source.</p>
+                        </div>
+                        <div class="card">
+                            <h4>📋 Loki</h4>
+                            <p>Centralized log aggregation. Agents query logs using LogQL for pattern detection during
+                                incident investigation.</p>
+                        </div>
+                        <div class="card">
+                            <h4>🔗 Jaeger</h4>
+                            <p>Distributed tracing across microservices. Traces agent workflows and tool calls for
+                                performance analysis.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Development Phases -->
+                <section class="sec" id="phases">
+                    <h2>📋 Development Phases</h2>
+                    <div class="phase"><span class="phase-num phase-done">1</span><span class="phase-name">Architecture
+                            & Documentation</span><span class="phase-status tag tag-green">✅ Complete</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">2</span><span class="phase-name">Core AI
+                            Agents (CrewAI)</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">3</span><span class="phase-name">MCP Tool
+                            Server</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">4</span><span class="phase-name">Event
+                            Dispatcher</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">5</span><span
+                            class="phase-name">Databases</span><span class="phase-status tag tag-orange">Pending</span>
+                    </div>
+                    <div class="phase"><span class="phase-num phase-todo">6</span><span class="phase-name">Frontend
+                            Dashboard</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">7</span><span class="phase-name">Observability
+                            Stack</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">8</span><span class="phase-name">CI/CD
+                            Pipelines</span><span class="phase-status tag tag-orange">Pending</span></div>
+                    <div class="phase"><span class="phase-num phase-todo">9</span><span class="phase-name">Kubernetes
+                            Deployment</span><span class="phase-status tag tag-orange">Pending</span></div>
+                </section>
+
+                <!-- DB Schema -->
+                <section class="sec" id="schema">
+                    <h2>🗄️ Database Schema</h2>
+                    <h3>incidents</h3>
+                    <pre><code>CREATE TABLE incidents (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    alert_id        VARCHAR(255),
+    source          VARCHAR(50) NOT NULL,     -- 'grafana', 'github', 'k8s'
+    severity        VARCHAR(20) NOT NULL,     -- 'critical', 'warning', 'info'
+    status          VARCHAR(30) DEFAULT 'open',
+    title           TEXT NOT NULL,
+    service         VARCHAR(255),
+    description     TEXT,
+    root_cause      TEXT,
+    resolution      TEXT,
+    auto_resolved   BOOLEAN DEFAULT FALSE,
+    resolved_by     VARCHAR(255),
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    resolved_at     TIMESTAMPTZ,
+    metadata        JSONB DEFAULT '{}'
+);</code></pre>
+                    <h3>agent_executions</h3>
+                    <pre><code>CREATE TABLE agent_executions (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    incident_id     UUID REFERENCES incidents(id) ON DELETE CASCADE,
+    agent_name      VARCHAR(100) NOT NULL,
+    input_data      JSONB,
+    output_data     JSONB,
+    tool_calls      JSONB,
+    tokens_used     INTEGER,
+    duration_ms     INTEGER,
+    status          VARCHAR(20),
+    error_message   TEXT,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+                    <h3>remediations</h3>
+                    <pre><code>CREATE TABLE remediations (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    incident_id     UUID REFERENCES incidents(id) ON DELETE CASCADE,
+    action_type     VARCHAR(50) NOT NULL,
+    target          VARCHAR(255) NOT NULL,
+    namespace       VARCHAR(100),
+    status          VARCHAR(20),
+    before_state    JSONB,
+    after_state     JSONB,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+                    <h3>Indexes</h3>
+                    <pre><code>CREATE INDEX idx_incidents_status     ON incidents(status);
+CREATE INDEX idx_incidents_created    ON incidents(created_at DESC);
+CREATE INDEX idx_incidents_service    ON incidents(service);
+CREATE INDEX idx_incidents_severity   ON incidents(severity);
+CREATE INDEX idx_agent_exec_incident  ON agent_executions(incident_id);
+CREATE INDEX idx_remediations_incident ON remediations(incident_id);</code></pre>
+                </section>
+
+                <!-- API Reference -->
+                <section class="sec" id="api">
+                    <h2>🌐 API Reference</h2>
+                    <h3>Agent Gateway (FastAPI :8000)</h3>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/health</code></td>
+                                <td>Health check</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/api/incidents</code></td>
+                                <td>List all incidents</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/api/incidents/{id}</code></td>
+                                <td>Get incident details</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-orange">POST</span></td>
+                                <td><code>/api/incidents</code></td>
+                                <td>Create manual incident</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/api/agents</code></td>
+                                <td>List active agents</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/api/agents/{id}/status</code></td>
+                                <td>Agent execution status</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/api/remediations</code></td>
+                                <td>List remediations</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3>Event Dispatcher (Node.js :3001)</h3>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tag tag-orange">POST</span></td>
+                                <td><code>/webhooks/github</code></td>
+                                <td>GitHub webhook receiver</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-orange">POST</span></td>
+                                <td><code>/webhooks/grafana</code></td>
+                                <td>Grafana alert receiver</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-orange">POST</span></td>
+                                <td><code>/webhooks/kubernetes</code></td>
+                                <td>K8s event receiver</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-green">GET</span></td>
+                                <td><code>/health</code></td>
+                                <td>Health check</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+
+        <footer class="ftr">
+            <p></p>
+        </footer>
+    </div>
+
+    <script>
+        // Sidebar active state on scroll
+        const sections = document.querySelectorAll('.sec');
+        const links = document.querySelectorAll('.sidebar a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+            links.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+        });
+    </script>
+</body>
+
+</html>

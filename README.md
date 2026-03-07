@@ -1,0 +1,209 @@
+# 🛡️ Sentinel - Autonomous SRE Platform
+
+> AI-powered infrastructure that detects, diagnoses, fixes, and documents incidents automatically.
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           EVENT SOURCES                                  │
+│  GitHub Webhooks │ Grafana Alerts │ K8s Events │ Slack Commands        │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    NODE.JS EVENT DISPATCHER (:3001)                      │
+│  • Receives webhooks  • Validates  • Publishes to Kafka  • Socket.io    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           APACHE KAFKA                                   │
+│  Topics: incidents │ deployments │ compliance │ remediations            │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    FASTAPI AGENT GATEWAY (:8000)                         │
+│  • Consumes Kafka  • Orchestrates CrewAI  • Manages agent lifecycle     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         CREWAI AGENT SWARM                               │
+│  Triage │ Log Analyst │ Metric Correlator │ Fixer │ Docs Generator     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         MCP TOOL SERVER (:8001)                          │
+│  Kubernetes │ GitHub │ Prometheus │ Slack │ Jira │ Terraform           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## 🚀 Quick Start
+
+```bash
+# Clone and start
+cd sentinel
+docker-compose up -d
+
+# Access
+# Dashboard: http://localhost:3000
+# API: http://localhost:8000
+# Event Dispatcher: http://localhost:3001
+```
+
+## 📦 Project Structure
+
+```
+sentinel/
+├── services/
+│   ├── agent-gateway/      # FastAPI + CrewAI (Python)
+│   ├── event-dispatcher/   # Node.js webhooks + Socket.io
+│   └── mcp-server/         # MCP Tool Server (Python)
+├── frontend/               # React Dashboard
+├── k8s/                    # Kubernetes manifests
+├── docs/                   # Documentation
+│   └── diagrams/           # Architecture diagrams
+├── .github/workflows/      # CI/CD pipelines
+├── docker-compose.yml      # Local development
+└── README.md
+```
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React + Vite + Tailwind |
+| Event Handler | Node.js + Express + Socket.io |
+| AI Gateway | FastAPI + CrewAI + LangChain |
+| LLM | OpenRouter (gpt-oss-20b:free) |
+| Tools | MCP Protocol |
+| Queue | Apache Kafka |
+| Cache | Redis |
+| Database | PostgreSQL |
+| Vector DB | Qdrant |
+| Monitoring | Prometheus + Grafana |
+| CI/CD | GitHub Actions |
+| Container | Docker + Kubernetes |
+
+## 📋 Development Phases
+
+- [x] Phase 1: Architecture & Documentation
+- [ ] Phase 2: Core AI Agents
+- [ ] Phase 3: MCP Tool Server
+- [ ] Phase 4: Event Dispatcher
+- [ ] Phase 5: Databases
+- [ ] Phase 6: Frontend
+- [ ] Phase 7: Observability
+- [ ] Phase 8: CI/CD
+- [ ] Phase 9: Kubernetes
+
+## 📄 License
+
+MIT
+
+> AI-powered infrastructure that detects, diagnoses, fixes, and documents incidents automatically.
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           EVENT SOURCES                                  │
+│  GitHub Webhooks │ Grafana Alerts │ K8s Events │ Slack Commands        │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    NODE.JS EVENT DISPATCHER (:3001)                      │
+│  • Receives webhooks  • Validates  • Publishes to Kafka  • Socket.io    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           APACHE KAFKA                                   │
+│  Topics: incidents │ deployments │ compliance │ remediations            │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    FASTAPI AGENT GATEWAY (:8000)                         │
+│  • Consumes Kafka  • Orchestrates CrewAI  • Manages agent lifecycle     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         CREWAI AGENT SWARM                               │
+│  Triage │ Log Analyst │ Metric Correlator │ Fixer │ Docs Generator     │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         MCP TOOL SERVER (:8001)                          │
+│  Kubernetes │ GitHub │ Prometheus │ Slack │ Jira │ Terraform           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## 🚀 Quick Start
+
+```bash
+# Clone and start
+cd aegis
+docker-compose up -d
+
+# Access
+# Dashboard: http://localhost:3000
+# API: http://localhost:8000
+# Event Dispatcher: http://localhost:3001
+```
+
+## 📦 Project Structure
+
+```
+aegis/
+├── services/
+│   ├── agent-gateway/      # FastAPI + CrewAI (Python)
+│   ├── event-dispatcher/   # Node.js webhooks + Socket.io
+│   └── mcp-server/         # MCP Tool Server (Python)
+├── frontend/               # React Dashboard
+├── k8s/                    # Kubernetes manifests
+├── docs/                   # Documentation
+│   └── diagrams/           # Architecture diagrams
+├── .github/workflows/      # CI/CD pipelines
+├── docker-compose.yml      # Local development
+└── README.md
+```
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React + Vite + Tailwind |
+| Event Handler | Node.js + Express + Socket.io |
+| AI Gateway | FastAPI + CrewAI + LangChain |
+| LLM | OpenRouter (gpt-oss-20b:free) |
+| Tools | MCP Protocol |
+| Queue | Apache Kafka |
+| Cache | Redis |
+| Database | PostgreSQL |
+| Vector DB | Qdrant |
+| Monitoring | Prometheus + Grafana |
+| CI/CD | GitHub Actions |
+| Container | Docker + Kubernetes |
+
+## 📋 Development Phases
+
+- [/] Phase 1: Architecture & Documentation
+- [ ] Phase 2: Core AI Agents
+- [ ] Phase 3: MCP Tool Server
+- [ ] Phase 4: Event Dispatcher
+- [ ] Phase 5: Databases
+- [ ] Phase 6: Frontend
+- [ ] Phase 7: Observability
+- [ ] Phase 8: CI/CD
+- [ ] Phase 9: Kubernetes
+
+## 📄 License
+
+MIT
