@@ -4,38 +4,9 @@
 
 ## Architecture
 
-```
-  GitHub        Grafana       Kubernetes       Slack
-    │              │              │              │
-    └──────────────┴──────┬───────┴──────────────┘
-                          ▼
-                  Event Dispatcher
-              Node.js · Validate · Publish
-                          │
-                          ▼
-                     Apache Kafka
-                  Event streaming · 5 topics
-                          │
-                          ▼
-                    Agent Gateway          ──►  Memory
-               FastAPI · CrewAI                 PostgreSQL · Redis · Qdrant
-                    │                      
-    ┌───────┬───────┼───────┬───────┬───────┐
-    ▼       ▼       ▼       ▼       ▼       ▼
- Triage   Log    Correlator Fixer Security Compliance
- Agent  Analyst    Agent   Agent   Agent    Agent
-    │       │       │       │       │       │
-    └───────┴───────┴───┬───┴───────┴───────┘
-                        ▼
-                  MCP Tool Server
-           Model Context Protocol · Tools
-                        │
-    ┌───────┬───────┬───┼───┬───────┬───────┐
-    ▼       ▼       ▼   ▼   ▼       ▼       ▼
-   K8s   GitHub  Prom  Slack Jira Terraform ...
-```
+![NightOwl Architecture](docs/diagrams/architecture.gif)
 
-> 🎬 **[View Live Architecture Diagram](https://aditya153.github.io/NightOwl-SRE-Platform/docs/diagrams/architecture-animated.html)** — Interactive animated walkthrough of the platform
+> 🎬 **[View Full Interactive Diagram](https://aditya153.github.io/NightOwl-SRE-Platform/docs/diagrams/architecture-animated.html)**
 
 ## Tech Stack
 
