@@ -1,4 +1,5 @@
 import json
+import re
 from crewai import Agent, Task, Crew, Process, LLM
 from config import settings
 
@@ -20,6 +21,12 @@ triage_agent = Agent(
     llm=llm,
     verbose=False,
 )
+
+def clean_json_response(raw: str) -> str:
+    cleaned = raw.strip()
+    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+    return cleaned.strip()
 
 def run_triage(alert_text: str) -> dict:
     triage_task = Task(
@@ -46,9 +53,10 @@ def run_triage(alert_text: str) -> dict:
 
     result = crew.kickoff()
     raw_output = result.raw
+    cleaned = clean_json_response(raw_output)
 
     try:
-        parsed = json.loads(raw_output)
+        parsed = json.loads(cleaned)
     except json.JSONDecodeError:
         parsed = {
             "severity": "UNKNOWN",
@@ -58,3 +66,4 @@ def run_triage(alert_text: str) -> dict:
         }
 
     return parsed
+

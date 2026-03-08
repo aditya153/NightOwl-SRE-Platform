@@ -4,3 +4,4 @@ pydantic-settings==2.10.1
 pydantic==2.11.10
 crewai==1.10.1
 langchain-openai==1.1.10
+litellm==1.82.0
