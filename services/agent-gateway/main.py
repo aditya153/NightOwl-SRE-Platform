@@ -13,7 +13,10 @@ from models import (
     AgentStatus,
     Severity,
     IncidentType,
+    TriageRequest,
+    TriageResponse,
 )
+from agents.triage import run_triage
 
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL),
@@ -97,6 +100,22 @@ async def list_agents():
         AgentTask(name="PostMortem", role="Auto-generated incident reports & timelines", status=AgentStatus.IDLE),
     ]
     return {"agents": [a.model_dump() for a in agents], "total": len(agents)}
+
+@app.post(
+    "/api/v1/triage",
+    response_model=TriageResponse,
+    tags=["Triage"],
+)
+async def triage_alert(request: TriageRequest):
+    logger.info(f"Triage request received: {request.alert_text}")
+    result = run_triage(request.alert_text)
+    return TriageResponse(
+        alert_text=request.alert_text,
+        severity=result.get("severity", "UNKNOWN"),
+        priority=result.get("priority", 3),
+        action=result.get("action", "INVESTIGATE"),
+        reasoning=result.get("reasoning", "No reasoning provided"),
+    )
 
 def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
     agent_map = {

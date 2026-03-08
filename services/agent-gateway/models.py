@@ -65,3 +65,17 @@ class AgentTask(BaseModel):
     name: str
     role: str
     status: AgentStatus = AgentStatus.IDLE
+
+class TriageRequest(BaseModel):
+    alert_text: str = Field(
+        ..., min_length=5, max_length=1000,
+        description="The raw alert text to analyze",
+        examples=["High CPU usage on api-server at 95%"],
+    )
+
+class TriageResponse(BaseModel):
+    alert_text: str
+    severity: str
+    priority: int
+    action: str
+    reasoning: str
