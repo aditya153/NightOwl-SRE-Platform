@@ -1,4 +1,6 @@
 fastapi==0.115.0
-uvicorn==0.30.0
-pydantic-settings==2.5.0
-pydantic==2.9.0
+uvicorn==0.41.0
+pydantic-settings==2.10.1
+pydantic==2.11.10
+crewai==1.10.1
+langchain-openai==1.1.10
