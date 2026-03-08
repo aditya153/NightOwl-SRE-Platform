@@ -1,0 +1,15 @@
+# NightOwl Agent Gateway — Dependencies
+# ======================================
+# Only what we need today. More will be added as we build.
+
+# Web framework — fast, modern, auto-generates API docs
+fastapi==0.115.0
+
+# ASGI server — runs the FastAPI app
+uvicorn==0.30.0
+
+# Settings management — loads .env files with validation
+pydantic-settings==2.5.0
+
+# Pydantic core — data validation for all our models
+pydantic==2.9.0
