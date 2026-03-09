@@ -108,14 +108,21 @@ async def list_agents():
 )
 async def triage_alert(request: TriageRequest):
     logger.info(f"Triage request received: {request.alert_text}")
-    result = run_triage(request.alert_text)
-    return TriageResponse(
-        alert_text=request.alert_text,
-        severity=result.get("severity", "UNKNOWN"),
-        priority=result.get("priority", 3),
-        action=result.get("action", "INVESTIGATE"),
-        reasoning=result.get("reasoning", "No reasoning provided"),
-    )
+    try:
+        result = run_triage(request.alert_text)
+        return TriageResponse(
+            alert_text=request.alert_text,
+            severity=result.get("severity", "UNKNOWN"),
+            priority=result.get("priority", 3),
+            action=result.get("action", "INVESTIGATE"),
+            reasoning=result.get("reasoning", "No reasoning provided"),
+        )
+    except Exception as e:
+        logger.error(f"Triage agent failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Triage agent encountered an error: {str(e)}",
+        )
 
 def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
     agent_map = {
