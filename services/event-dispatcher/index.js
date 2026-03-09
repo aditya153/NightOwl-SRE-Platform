@@ -23,6 +23,18 @@ app.post("/webhooks/grafana", (req, res) => {
     res.status(200).json({ status: "received" });
 });
 
+app.post("/webhooks/github", (req, res) => {
+    const event = req.headers['x-github-event'] || "unknown";
+    const action = req.body.action || "triggered";
+    console.log(`[GITHUB] Received event: ${event} | Action: ${action}`);
+
+    if (req.body.repository) {
+        console.log(`[GITHUB] Repo: ${req.body.repository.full_name}`);
+    }
+
+    res.status(200).json({ status: "received" });
+});
+
 app.listen(port, () => {
     console.log(`Event Dispatcher running on port ${port}`);
 });
