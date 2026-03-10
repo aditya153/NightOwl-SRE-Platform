@@ -18,6 +18,7 @@ from models import (
     TriageResponse,
 )
 from agents.triage import run_triage
+from kafka_consumer import consume_alerts
 
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL),
@@ -30,8 +31,18 @@ async def lifespan(app: FastAPI):
     logger.info("🦉 NightOwl Agent Gateway starting...")
     logger.info(f"   Environment: {settings.ENVIRONMENT}")
     logger.info(f"   Version:     {settings.API_VERSION}")
+    
+    # Startup logic: Start Kafka Consumer task
+    consumer_task = asyncio.create_task(consume_alerts())
     yield
+    
+    # Shutdown logic
     logger.info("🦉 NightOwl Agent Gateway shutting down...")
+    consumer_task.cancel()
+    try:
+        await consumer_task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(
     title=settings.APP_NAME,

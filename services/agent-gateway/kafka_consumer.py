@@ -4,8 +4,7 @@ import logging
 from aiokafka import AIOKafkaConsumer
 import os
 
-from agents.triage import triage_agent, triage_task
-from crewai import Crew, Process
+from agents.triage import run_triage
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,22 +32,17 @@ async def consume_alerts():
             # Trigger the AI Triage Agent
             logger.info("[AGENT GATEWAY] Waking up Triage Agent...")
             try:
-                crew = Crew(
-                    agents=[triage_agent],
-                    tasks=[triage_task],
-                    process=Process.sequential,
-                    verbose=True
-                )
+                alert_text = json.dumps(alert_data)
                 
                 # We offload the synchronous CrewAI execution to a thread to not block the async Kafka loop
                 loop = asyncio.get_event_loop()
                 result = await loop.run_in_executor(
                     None, 
-                    crew.kickoff, 
-                    {"alert_payload": json.dumps(alert_data)}
+                    run_triage, 
+                    alert_text
                 )
                 
-                logger.info(f"[AGENT SUMMARY] Triage Complete:\n{result}")
+                logger.info(f"[AGENT SUMMARY] Triage Complete:\n{json.dumps(result, indent=2)}")
             except Exception as e:
                 logger.error(f"[AGENT ERROR] Failed to triage alert: {str(e)}")
                 
