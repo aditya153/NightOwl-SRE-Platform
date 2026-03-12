@@ -7,6 +7,7 @@ import os
 from agents.triage import run_triage
 from database import AsyncSessionLocal
 from models_db import IncidentDB, AgentLogDB
+from vector_db import init_vector_db, add_incident_resolution_to_memory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,6 +26,9 @@ async def consume_alerts():
     
     await consumer.start()
     logger.info(f"[KAFKA CONSUMER] Started listening on '{TOPIC}' at {KAFKA_BROKER}")
+    
+    # Initialize Qdrant Collection on startup
+    init_vector_db()
     
     try:
         async for msg in consumer:
@@ -81,6 +85,17 @@ async def consume_alerts():
                     session.add(agent_log)
                     await session.commit()
                     logger.info(f"[DB] Updated Incident #{incident_id} and saved Agent Log")
+
+                # Day 7: Save to Vector DB (Long-Term Memory)
+                logger.info(f"[AGENT GATEWAY] Saving resolution to Vector Memory (RAG)...")
+                await loop.run_in_executor(
+                    None, 
+                    add_incident_resolution_to_memory, 
+                    incident_id, 
+                    title, 
+                    result.get("reasoning", "No reasoning provided"), 
+                    result.get("action", "UNKNOWN")
+                )
 
             except Exception as e:
                 logger.error(f"[AGENT ERROR] Failed to triage alert: {str(e)}")
