@@ -88,9 +88,7 @@ async def consume_alerts():
 
                 # Day 7: Save to Vector DB (Long-Term Memory)
                 logger.info(f"[AGENT GATEWAY] Saving resolution to Vector Memory (RAG)...")
-                await loop.run_in_executor(
-                    None, 
-                    add_incident_resolution_to_memory, 
+                await add_incident_resolution_to_memory(
                     incident_id, 
                     title, 
                     result.get("reasoning", "No reasoning provided"), 
