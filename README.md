@@ -32,26 +32,30 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What's Built So Far
+## What We've Built (Days 1-8)
 
-### Agent Gateway (`services/agent-gateway`)
-The central API service built with FastAPI. Handles incoming incidents, validates data using Pydantic models, and routes alerts to the right AI agents.
+### 1. The API Gateway (FastAPI)
+The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
+- REST API with structured endpoints and CORS middleware.
+- Pydantic models for data validation (Severity, IncidentType, AgentStatus enums).
 
-**Key features:**
-- REST API with 6 endpoints (health, incidents, agents, triage)
-- Pydantic models for data validation (Severity, IncidentType, AgentStatus enums)
-- Configuration management via environment variables
-- CORS middleware for frontend integration
-- Smart agent routing based on incident type
+### 2. The Event Dispatcher (Node.js)
+The "Ears" of the platform. A lightning-fast Express.js webhook receiver that instantly accepts payloads from GitHub or Grafana and pushes them to our message broker.
 
-### Triage Agent (`services/agent-gateway/agents/triage.py`)
-The first AI agent built with CrewAI and connected to Gemini 2.0 Flash via OpenRouter. It receives a raw alert text and returns a structured JSON response with severity, priority, recommended action, and reasoning.
+### 3. The Nervous System (Apache Kafka)
+Integrated Apache Kafka + Zookeeper to decouple event ingestion from AI processing. The Node.js service acts as the Producer, and the Python service acts as the asynchronous Consumer via `aiokafka`.
 
-**Example:**
-```
-Input:  "High CPU usage on api-server at 95%"
-Output: { severity: MEDIUM, priority: 2, action: INVESTIGATE, reasoning: "..." }
-```
+### 4. The Filing Cabinet (PostgreSQL)
+Set up a relational persistence layer using PostgreSQL via Docker Compose. Implemented SQLAlchemy ORM models (Incidents and Agent Logs) and Alembic for automated database migrations. All Kafka events are now saved permanently.
+
+### 5. Long-term AI Memory (Qdrant Vector DB + RAG)
+Deployed a Qdrant Vector Database to allow the AI to search for historical incident resolutions. We use local HuggingFace embeddings (`sentence-transformers`) via LangChain to convert agent reasoning into 384-dimensional mathematical arrays for zero-latency semantic search.
+
+### 6. The Triage Agent
+Our first CrewAI agent. Uses OpenRouter (Gemini 2.0 Flash) to parse raw infrastructure alerts and output a strict JSON classification: Severity, Priority, Action, and Reasoning.
+
+### 7. The Log Analyst Agent
+Our second CrewAI agent. Designed specifically to parse noisy Java/Python stack traces, ignore the framework garbage, and extract the exact `root_cause`, `error_type`, and `culprit_file` that caused a server crash.
 
 ## Development Progress
 
