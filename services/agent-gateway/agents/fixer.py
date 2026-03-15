@@ -1,10 +1,12 @@
 import json
-from crewai import Agent, Task, Crew
-import config
+from crewai import Agent, Task, Crew, LLM
+from config import settings
 from .tools import restart_kubernetes_pod, clear_redis_cache, rollback_deployment, scale_up_replicas
 
-# Initialize the LLM (Gemini 2.0 via OpenRouter)
-llm = config.get_llm()
+llm = LLM(
+    model=f"openrouter/{settings.OPENROUTER_MODEL}",
+    api_key=settings.OPENROUTER_API_KEY,
+)
 
 # Define the Fixer Agent with strict safety instructions
 fixer_agent = Agent(

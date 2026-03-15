@@ -1,4 +1,4 @@
-from langchain.tools import tool
+from crewai.tools import tool
 
 @tool("Restart Kubernetes Pod")
 def restart_kubernetes_pod(pod_name: str, namespace: str = "default") -> str:
