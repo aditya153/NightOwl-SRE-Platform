@@ -1,6 +1,7 @@
 import json
 from crewai import Agent, Task, Crew
 import config
+from .tools import restart_kubernetes_pod, clear_redis_cache, rollback_deployment, scale_up_replicas
 
 # Initialize the LLM (Gemini 2.0 via OpenRouter)
 llm = config.get_llm()
@@ -14,6 +15,7 @@ fixer_agent = Agent(
     backstory="""You are a veteran SRE who has seen it all. You know that hastily applied 'fixes' often cause bigger outages than the original problem. 
                  You strictly adhere to the Human-in-the-Loop philosophy. You always prefer to clear a cache or restart a stateless pod rather than running database migrations or dropping tables autonomously.
                  You understand that you have physical write access to the infrastructure, meaning your actions have real-world consequences.""",
+    tools=[restart_kubernetes_pod, clear_redis_cache, rollback_deployment, scale_up_replicas],
     llm=llm,
     verbose=True,
     allow_delegation=False
