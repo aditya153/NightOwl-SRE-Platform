@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Day NightOwl Progress Tracker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --bg-page: #0d1117;
+            --bg-card: #161b22;
+            --bg-hover: #1f2428;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --border-color: #30363d;
+            --accent-primary: #58a6ff;
+            --success-green: #238636;
+            --success-green-hover: #2ea043;
+            --progress-bar-bg: #21262d;
+            --progress-bar-fill: linear-gradient(90deg, #8a2be2, #3fb950);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Progress Bar Section */
+        .progress-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .progress-percent {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3fb950;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--progress-bar-bg);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--progress-bar-fill);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .progress-stats span {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Day Cards List */
+        .days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .day-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .day-card:hover { border-color: #4b525d; }
+
+        .day-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            user-select: none;
+            background-color: rgba(255,255,255,0.02);
+            border-bottom: 1px solid transparent;
+        }
+        
+        .day-card.expanded .day-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .day-status-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background-color: var(--progress-bar-bg);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .day-card.completed .day-status-icon {
+            background-color: var(--success-green);
+            border-color: var(--success-green-hover);
+            color: white;
+        }
+
+        .day-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            flex-grow: 1;
+        }
+
+        .day-summary-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .chevron {
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+
+        .day-card.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .tasks-container {
+            display: none;
+            padding: 1.5rem;
+        }
+
+        .day-card.expanded .tasks-container {
+            display: block;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .task-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 4px;
+            background-color: transparent;
+            cursor: pointer;
+            position: relative;
+            margin-top: 2px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox:checked {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .task-checkbox:checked::after {
+            content: '✔';
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .task-label {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            cursor: pointer;
+            line-height: 1.5;
+            transition: color 0.2s;
+        }
+
+        .task-item.checked .task-label {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Progress Bar -->
+        <div class="progress-card">
+            <div class="progress-header">
+                <h2>Overall Progress</h2>
+                <div class="progress-percent" id="progress-text">0%</div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+            <div class="progress-stats">
+                <div>Days Completed: <span id="days-completed">0/30</span></div>
+                <div>Tasks Done: <span id="tasks-done">0/0</span></div>
+            </div>
+            <div style="margin-top: 15px; text-align: right;">
+                <button onclick="resetProgress()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-muted); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Reset Progress</button>
+            </div>
+        </div>
+
+        <!-- Days Container -->
+        <div class="days-list" id="days-container">
+            <!-- JavaScript will populate this -->
+        </div>
+
+    </div>
+
+    <script>
+        // 30-Day Task Data Structure
+        const planData = [
+            {
+                day: 1, title: "Project Kickoff & Identity",
+                tasks: [
+                    "Define the NightOwl brand and vision.",
+                    "Create the project repository and initial documentation.",
+                    "Announce the 30-day challenge on LinkedIn by crafting the first post."
+                ]
+            },
+            {
+                day: 2, title: "Architecture & System Design",
+                tasks: [
+                    "Design the complete microservices architecture.",
+                    "Map the flow between Event Dispatcher, Kafka, Agent Gateway, and AI Agents.",
+                    "Create detailed technical flow diagrams for the LinkedIn post."
+                ]
+            },
+            {
+                day: 3, title: "The First AI Agent (Brain)",
+                tasks: [
+                    "Initialize the agent-gateway FastAPI service.",
+                    "Integrate CrewAI and OpenRouter (Gemini 2.0 Flash).",
+                    "Build the Triage Agent to classify alert severity and prioritize actions.",
+                    "Create the POST /api/v1/triage endpoint."
+                ]
+            },
+            {
+                day: 4, title: "The Event Dispatcher (Ears)",
+                tasks: [
+                    "Initialize the event-dispatcher Node.js/Express service.",
+                    "Build the POST /webhooks/grafana endpoint to receive infrastructure alerts.",
+                    "Build the POST /webhooks/github endpoint to receive repository events.",
+                    "Implement request logging (Morgan) and test via cURL."
+                ]
+            },
+            {
+                day: 5, title: "Introduction of Kafka",
+                tasks: [
+                    "Set up Docker Compose for Apache Kafka and Zookeeper/Kraft.",
+                    "Configure the Node.js Event Dispatcher as a Kafka Producer.",
+                    "Configure the Python Agent Gateway as a Kafka Consumer.",
+                    "Verify end-to-end alert flow: Webhook -> Kafka -> Agent Gateway."
+                ]
+            },
+            {
+                day: 6, title: "Database & Persistence Layer",
+                tasks: [
+                    "Set up PostgreSQL via Docker Compose.",
+                    "Create SQLAlchemy models for Incidents and Agent Logs.",
+                    "Implement Alembic for database migrations.",
+                    "Save incoming Kafka events to the database robustly."
+                ]
+            },
+            {
+                day: 7, title: "Vector Database Prep (Memory)",
+                tasks: [
+                    "Deploy Qdrant (Vector DB) locally.",
+                    "Set up LangChain embeddings pipeline.",
+                    "Configure the system to store past incident resolutions for future Agent lookup (RAG pattern)."
+                ]
+            },
+            {
+                day: 8, title: "Log Analyst Agent",
+                tasks: [
+                    "Build the second agent: The Log Analyst.",
+                    "Define specific role, goal, and tasks for parsing raw application logs.",
+                    "Test parsing complex dummy stack traces."
+                ]
+            },
+            {
+                day: 9, title: "Correlator Agent",
+                tasks: [
+                    "Build the Correlator Agent.",
+                    "Implement logic to group multiple concurrent alerts into single, unified incidents.",
+                    "Implement CrewAI sequential process workflows between Triage, Log, and Correlator."
+                ]
+            },
+            {
+                day: 10, title: "The Fixer Agent (Preparation)",
+                tasks: [
+                    "Design the prompt and guardrails for the Fixer Agent.",
+                    "Define the exact tools the Fixer will need to safely interact with infrastructure.",
+                    "Draft initial safety boundaries (Human-in-the-loop strategy)."
+                ]
+            },
+            {
+                day: 11, title: "Building MCP Tool Servers (Intro)",
+                tasks: [
+                    "Set up the Model Context Protocol (MCP) Server architecture.",
+                    "Define schema standards for how agents will invoke tools.",
+                    "Explain why MCP is used for standardized Agent tooling in today's documentation."
+                ]
+            },
+            {
+                day: 12, title: "Kubernetes MCP Tool",
+                tasks: [
+                    "Build the Kubernetes MCP Tool implementation.",
+                    "Implement functional API wrapper allowing Agents to restart failed pods.",
+                    "Implement functional API wrapper allowing Agents to scale deployments."
+                ]
+            },
+            {
+                day: 13, title: "GitHub MCP Tool",
+                tasks: [
+                    "Build the GitHub MCP Tool implementation.",
+                    "Implement functional tools for Agents to create PRs.",
+                    "Implement functional tools for Agents to comment on issues."
+                ]
+            },
+            {
+                day: 14, title: "Agent & Tool Synchronization",
+                tasks: [
+                    "Connect the Fixer Agent to the internal MCP Servers.",
+                    "Provide the Fixer Agent with mock infrastructure data.",
+                    "Let the Fixer Agent successfully perform its first completely automated mock action."
+                ]
+            },
+            {
+                day: 15, title: "Mid-point Review",
+                tasks: [
+                    "Conduct an end-to-end test of the entire backend so far.",
+                    "Verify the complete flow: Grafana Alert -> Kafka -> Triage Agent -> Correlator -> Fixer Agent -> Kubernetes fix execution.",
+                    "Refactor any technical debt accumulated over the first 14 days."
+                ]
+            },
+            {
+                day: 16, title: "React/Vite Setup",
+                tasks: [
+                    "Initialize the Frontend React + Vite project.",
+                    "Setup Tailwind CSS and primary NightOwl theme tokens.",
+                    "Establish the application folder structure (components, hooks, pages)."
+                ]
+            },
+            {
+                day: 17, title: "Master Incident List Layout",
+                tasks: [
+                    "Build the comprehensive Incident List layout visual component.",
+                    "Build the collapsible AI Agent Status sidebar.",
+                    "Populate the UI with mock incident dummy data."
+                ]
+            },
+            {
+                day: 18, title: "Incident Detail View",
+                tasks: [
+                    "Build the Incident Detail view.",
+                    "Design the chat-style view showing the AI Agent internal reasoning and dialogue.",
+                    "Add syntax highlighting block styles for logs and JSON within the UI."
+                ]
+            },
+            {
+                day: 19, title: "React Query Integration",
+                tasks: [
+                    "Integrate React Query (TanStack Query) for data fetching.",
+                    "Connect the React frontend to the FastAPI gateway REST endpoints.",
+                    "Replace mock data with real database fetched state."
+                ]
+            },
+            {
+                day: 20, title: "Real-time Connectivity",
+                tasks: [
+                    "Setup Socket.io on the Node.js Event Dispatcher (or FastAPI server).",
+                    "Connect Socket.io client in the React Application.",
+                    "Ensure real-time dashboard updates trigger when new Kafka events arrive."
+                ]
+            },
+            {
+                day: 21, title: "UI Polish",
+                tasks: [
+                    "Finalize UI polish adding necessary micro-animations and hover states.",
+                    "Ensure completely responsive design (Mobile, Tablet, Desktop support) for the dashboard.",
+                    "Add light/dark mode toggles (Optional)."
+                ]
+            },
+            {
+                day: 22, title: "RAG Memory Initialization",
+                tasks: [
+                    "Populate the Qdrant Vector DB with historical playbooks and runbooks.",
+                    "Create the automated script to ingest new runbooks into embeddings.",
+                    "Verify cosine similarity search retrieves correct playbooks."
+                ]
+            },
+            {
+                day: 23, title: "Triage Memory Upgrade",
+                tasks: [
+                    "Update the Triage Agent configuration to connect directly to Qdrant.",
+                    "Give the Triage Agent explicit instructions to check historical playbook vectors before diagnosing a new alert.",
+                    "Verify RAG context improves reasoning accuracy."
+                ]
+            },
+            {
+                day: 24, title: "Compliance Agent",
+                tasks: [
+                    "Build the Compliance Agent.",
+                    "Add logic to ensure the Fixer Agent's proposed code changes do not violate organizational security policies before execution.",
+                    "Tie the Compliance Agent into the workflow pipeline."
+                ]
+            },
+            {
+                day: 25, title: "Human-in-the-Loop Integration",
+                tasks: [
+                    "Create a Slack App / Integration.",
+                    "Add workflow logic so the AI stops and requests manual human permission via Slack before executing High Severity production fixes.",
+                    "Implement the approve/deny webhook listener to resume Agent workflow."
+                ]
+            },
+            {
+                day: 26, title: "Dockerization",
+                tasks: [
+                    "Write optimized Dockerfiles for the Node.js Event Dispatcher.",
+                    "Write optimized Dockerfiles for the FastAPI Agent Gateway.",
+                    "Write optimized Dockerfiles for the React Frontend UI.",
+                    "Write Dockerfiles for any individual python MCP Tool servers."
+                ]
+            },
+            {
+                day: 27, title: "Master Configuration",
+                tasks: [
+                    "Write the comprehensive Master docker-compose.yml file.",
+                    "Link all networks globally (Kafka, Zookeeper, Postgres, Qdrant, React, Express, FastAPI).",
+                    "Ensure one-click 'docker compose up' deploys the entire ecosystem locally."
+                ]
+            },
+            {
+                day: 28, title: "CI/CD Deployment",
+                tasks: [
+                    "Set up GitHub Actions pipelines.",
+                    "Implement automated linting checks (ESLint, Flake8).",
+                    "Implement automated test running on PR creation.",
+                    "Configure Docker Image build steps."
+                ]
+            },
+            {
+                day: 29, title: "Chaos Engineering Test",
+                tasks: [
+                    "The Final Test: Intentionally break the Kubernetes/Docker system utilizing Chaos Engineering concepts.",
+                    "Watch NightOwl automatically detect, triage, correlate, cross-reference RAG memory, and execute the fix.",
+                    "Record the full video for the grand finale."
+                ]
+            },
+            {
+                day: 30, title: "Launch & Retrospective",
+                tasks: [
+                    "Finalize and polish all public-facing README files.",
+                    "Ensure setup instructions are crystal clear for open-source contributors.",
+                    "Publish open-source release announcement on LinkedIn.",
+                    "Write the final 30-day journey retrospective."
+                ]
+            }
+        ];
+
+        let totalTasks = 0;
+        
+        // Initialize logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("days-container");
+            
+            // Render the days
+            planData.forEach((dayData, dIndex) => {
+                totalTasks += dayData.tasks.length;
+                
+                // Create Card
+                const card = document.createElement("div");
+                card.className = "day-card";
+                card.id = `day-card-${dayData.day}`;
+                
+                // Header
+                const header = document.createElement("div");
+                header.className = "day-header";
+                header.onclick = () => toggleDay(dayData.day);
+                
+                const icon = document.createElement("div");
+                icon.className = "day-status-icon";
+                icon.id = `icon-day-${dayData.day}`;
+                icon.innerHTML = "✔"; // Will be transparent until completed
+                
+                const title = document.createElement("div");
+                title.className = "day-title";
+                title.innerText = `DAY ${dayData.day}: ${dayData.title}`;
+
+                const summary = document.createElement("div");
+                summary.className = "day-summary-text";
+                summary.id = `summary-day-${dayData.day}`;
+                summary.innerText = `0/${dayData.tasks.length} Tasks`;
+                
+                const chevron = document.createElement("div");
+                chevron.className = "chevron";
+                chevron.innerHTML = "▼";
+                
+                header.appendChild(icon);
+                header.appendChild(title);
+                header.appendChild(summary);
+                header.appendChild(chevron);
+                
+                // Tasks Container
+                const tasksContainer = document.createElement("div");
+                tasksContainer.className = "tasks-container";
+                
+                dayData.tasks.forEach((taskText, tIndex) => {
+                    const taskId = `task-${dayData.day}-${tIndex}`;
+                    
+                    const taskItem = document.createElement("div");
+                    taskItem.className = "task-item";
+                    taskItem.id = `task-container-${taskId}`;
+                    
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.className = "task-checkbox";
+                    checkbox.id = taskId;
+                    checkbox.onclick = () => updateProgress();
+                    
+                    const label = document.createElement("label");
+                    label.className = "task-label";
+                    label.htmlFor = taskId;
+                    label.innerText = taskText;
+                    
+                    taskItem.appendChild(checkbox);
+                    taskItem.appendChild(label);
+                    tasksContainer.appendChild(taskItem);
+                });
+                
+                card.appendChild(header);
+                card.appendChild(tasksContainer);
+                container.appendChild(card);
+            });
+
+            // Load saved state from LocalStorage
+            loadProgress();
+            
+            // Expand active (not fully complete) days at init
+            expandNextActiveDay();
+            
+            // Initial UI Update
+            updateProgress();
+        });
+
+        // Expand / Collapse
+        function toggleDay(day) {
+            const card = document.getElementById(`day-card-${day}`);
+            card.classList.toggle("expanded");
+        }
+
+        // Expand next incomplete day helper
+        function expandNextActiveDay() {
+            for (let i = 0; i < planData.length; i++) {
+                const day = planData[i].day;
+                let allCompleted = true;
+                
+                planData[i].tasks.forEach((_, tIndex) => {
+                    if (!document.getElementById(`task-${day}-${tIndex}`).checked) {
+                        allCompleted = false;
+                    }
+                });
+
+                if (!allCompleted) {
+                    document.getElementById(`day-card-${day}`).classList.add("expanded");
+                    break;
+                }
+            }
+        }
+
+        // Core Update Logic
+        function updateProgress() {
+            let completedTasks = 0;
+            let fullyCompletedDays = 0;
+            const stateToSave = {};
+
+            planData.forEach(dayData => {
+                const day = dayData.day;
+                let dayCompletedTasks = 0;
+                
+                dayData.tasks.forEach((_, tIndex) => {
+                    const taskId = `task-${day}-${tIndex}`;
+                    const checkbox = document.getElementById(taskId);
+                    const container = document.getElementById(`task-container-${taskId}`);
+                    
+                    // Style updating
+                    if (checkbox.checked) {
+                        container.classList.add("checked");
+                        dayCompletedTasks++;
+                        completedTasks++;
+                        stateToSave[taskId] = true;
+                    } else {
+                        container.classList.remove("checked");
+                        stateToSave[taskId] = false;
+                    }
+                });
+
+                const summaryText = document.getElementById(`summary-day-${day}`);
+                const dayCard = document.getElementById(`day-card-${day}`);
+                
+                summaryText.innerText = `${dayCompletedTasks}/${dayData.tasks.length} Tasks`;
+
+                // Update Day Card styling if whole day is fully complete
+                if (dayCompletedTasks === dayData.tasks.length) {
+                    fullyCompletedDays++;
+                    dayCard.classList.add("completed");
+                } else {
+                    dayCard.classList.remove("completed");
+                }
+            });
+
+            // Update Global Stats
+            const percent = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+            
+            document.getElementById("progress-bar").style.width = `${percent}%`;
+            document.getElementById("progress-text").innerText = `${percent}%`;
+            
+            document.getElementById("tasks-done").innerHTML = `<span style="color:#fff">${completedTasks}</span>/${totalTasks}`;
+            document.getElementById("days-completed").innerHTML = `<span style="color:#fff">${fullyCompletedDays}</span>/30`;
+
+            // Save to LocalStorage
+            localStorage.setItem("nightowl_progress", JSON.stringify(stateToSave));
+        }
+
+        // Local Storage Utilities
+        function loadProgress() {
+            const savedState = JSON.parse(localStorage.getItem("nightowl_progress"));
+            if (savedState) {
+                Object.keys(savedState).forEach(taskId => {
+                    const checkbox = document.getElementById(taskId);
+                    if (checkbox) checkbox.checked = savedState[taskId];
+                });
+            } else {
+                // Auto check Day 1-4 because we have definitely done those
+                checkDayTasks(1);
+                checkDayTasks(2);
+                checkDayTasks(3);
+                checkDayTasks(4);
+            }
+        }
+
+        function checkDayTasks(day) {
+            const dayMeta = planData.find(d => d.day === day);
+            if (!dayMeta) return;
+            dayMeta.tasks.forEach((_, index) => {
+                const cb = document.getElementById(`task-${day}-${index}`);
+                if (cb) cb.checked = true;
+            });
+        }
+
+        function resetProgress() {
+            if (confirm("Are you sure you want to completely erase all progress tracking data?")) {
+                localStorage.removeItem("nightowl_progress");
+                document.querySelectorAll(".task-checkbox").forEach(cb => cb.checked = false);
+                updateProgress();
+            }
+        }
+    </script>
+</body>
+</html>

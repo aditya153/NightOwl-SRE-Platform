@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NightOwl: Agentic AIOps Platform - Technical Architecture Specification</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg-dark: #09090b;
+            --bg-card: #18181b;
+            --bg-accent: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-primary: #3b82f6; /* Blue */
+            --accent-secondary: #8b5cf6; /* Purple */
+            --accent-tertiary: #10b981; /* Green */
+            --accent-quaternary: #f59e0b; /* Amber */
+            --accent-quinary: #ef4444; /* Red */
+            --border-glow: rgba(59, 130, 246, 0.4);
+            --border-subtle: #3f3f46;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Layout */
+        header {
+            text-align: left;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
+        /* Section Styling */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 60px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-subtle), transparent);
+        }
+
+        /* Documentation Block */
+        .doc-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .doc-block.frontend::before { background: var(--accent-primary); }
+        .doc-block.backend::before { background: var(--accent-tertiary); }
+        .doc-block.ai::before { background: var(--accent-secondary); }
+        .doc-block.db::before { background: var(--accent-quaternary); }
+        .doc-block.infra::before { background: var(--accent-quinary); }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .doc-header h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        /* Tags / Pills */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 400px;
+            justify-content: flex-end;
+        }
+
+        .tag {
+            background: var(--bg-accent);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Technical Details List */
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .tech-item h4 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .doc-block.frontend .tech-item h4 { color: var(--accent-primary); border-bottom-color: rgba(59, 130, 246, 0.3); }
+        .doc-block.backend .tech-item h4 { color: var(--accent-tertiary); border-bottom-color: rgba(16, 185, 129, 0.3); }
+        .doc-block.ai .tech-item h4 { color: var(--accent-secondary); border-bottom-color: rgba(139, 92, 246, 0.3); }
+        .doc-block.db .tech-item h4 { color: var(--accent-quaternary); border-bottom-color: rgba(245, 158, 11, 0.3); }
+        .doc-block.infra .tech-item h4 { color: var(--accent-quinary); border-bottom-color: rgba(239, 68, 68, 0.3); }
+
+        .tech-item p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .tech-item ul {
+            padding-left: 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .tech-item li {
+            margin-bottom: 8px;
+        }
+
+        .tech-item strong {
+            color: var(--text-main);
+        }
+
+        /* Code Block Styling */
+        .code-block {
+            background: #000;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-primary);
+            overflow-x: auto;
+            white-space: pre;
+            margin-top: 30px;
+        }
+
+        .code-block.yaml { color: var(--accent-quinary); }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .doc-header { flex-direction: column; gap: 20px; }
+            .tag-container { justify-content: flex-start; max-width: 100%; }
+            .tech-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <h1>NightOwl: Technical Architecture Specification</h1>
+            <div class="subtitle">
+                Comprehensive technical documentation detailing the networking, infrastructure, data structures, asynchronous programming patterns, and AI integration for an autonomous Agentic Site Reliability Engineering (SRE) platform.
+            </div>
+        </header>
+
+        <div class="section-title">1. UI & Observability Layer (Frontend)</div>
+        
+        <div class="doc-block frontend">
+            <div class="doc-header">
+                <h3>Frontend Architecture</h3>
+                <div class="tag-container">
+                    <span class="tag">React 18</span>
+                    <span class="tag">Vite</span>
+                    <span class="tag">Tailwind CSS</span>
+                    <span class="tag">TanStack Query v5</span>
+                    <span class="tag">Socket.io-client</span>
+                    <span class="tag">React Router DOM</span>
+                </div>
+            </div>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <h4>Component & State Management</h4>
+                    <p>Designed as a high-performance Single Page Application (SPA) prioritizing real-time observability over traditional CRUD operations.</p>
+                    <ul>
+                        <li><strong>Asynchronous State (TanStack Query):</strong> Utilized for aggressive caching, background refetching, and pagination of 1000+ historical incidents. Eliminates traditional Redux boilerplate while ensuring the UI is strictly synchronized with the Python Backend API.</li>
+                        <li><strong>Component Structure:</strong> Modular functional components using React Hooks (<code>useState</code>, <code>useEffect</code>). Separate contextual views for the Master Incident Dashboard, Collapsible AI Agent Status Sidebars, and Interactive Chat-Style Reasoning logs.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>Real-time Telemetry & Styling</h4>
+                    <p>Built to handle heavy, rapid telemetry updates without choking the browser's render cycle.</p>
+                    <ul>
+                        <li><strong>WebSocket Streaming (Socket.io):</strong> Establishing persistent TCP connections to the backend. When a new Kafka event triggers an AI triage, the backend emits granular, chunked updates to the UI, allowing SREs to watch the AI "think" in real-time.</li>
+                        <li><strong>Utility-First Styling (Tailwind):</strong> Implements a custom dark-mode design system with strict color tokens. Includes complex CSS Grid and Flexbox layouts for dashboards, syntax-highlighted code blocks for raw JSON payloads, and micro-animations for UX polish.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">2. API & Event Bus Layer (Backend)</div>
+        
+        <div class="doc-block backend">
+            <div class="doc-header">
+                <h3>Backend Microservices</h3>
+                <div class="tag-container">
+                    <span class="tag">Node.js / Express</span>
+                    <span class="tag">Python 3.11 / FastAPI</span>
+                    <span class="tag">KafkaJS & aiokafka</span>
+                    <span class="tag">Uvicorn</span>
+                    <span class="tag">asyncio</span>
+                </div>
+            </div>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <h4>The Ingestion Layer (Node.js Dispatcher)</h4>
+                    <p>A lightweight, purely asynchronous ingestion API explicitly designed to never drop incoming webhooks during high traffic.</p>
+                    <ul>
+                        <li><strong>Express.js Entrypoint:</strong> Handles raw POST payloads from GitHub (Issues, PRs) and Grafana (Prometheus Alerts).</li>
+                        <li><strong>Kafka Producer Hook (KafkaJS):</strong> Validates payloads and immediately pushes them to the <code>alerts-topic</code> Kafka partition. </li>
+                        <li><strong>Non-blocking I/O:</strong> Returns a <code>200 OK</code> response to the webhook provider <em>instantly</em> before the complex AI processing begins, preventing timeout errors on the client side during severity spikes.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>The Orchestration Layer (Python Gateway)</h4>
+                    <p>A heavy-compute FastAPI server managing all asynchronous database I/O and synchronous machine learning inference.</p>
+                    <ul>
+                        <li><strong>Kafka Consumer (aiokafka):</strong> Operates an infinite <code>async for msg in consumer</code> loop listening to the <code>alerts-topic</code>. Guaranteed at-least-once delivery semantics for all incidents.</li>
+                        <li><strong>Thread Pool Offloading:</strong> Because LLM API requests and CrewAI execution are inherently synchronous (blocking operations), they are passed to <code>asyncio.get_event_loop().run_in_executor()</code>. This ensures the main Kafka consumer loop continues pulling new events while the AI is busy "thinking" on a separate CPU thread.</li>
+                        <li><strong>REST Architecture:</strong> Uses Pydantic for rigid request/response model validation and serialization for the Frontend.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">3. Hybrid Persistence Layer (Database)</div>
+
+        <div class="doc-block db">
+            <div class="doc-header">
+                <h3>Dual Database Strategy (ACID + Vector)</h3>
+                <div class="tag-container">
+                    <span class="tag">PostgreSQL 15</span>
+                    <span class="tag">SQLAlchemy (asyncpg)</span>
+                    <span class="tag">Alembic</span>
+                    <span class="tag">Qdrant</span>
+                    <span class="tag">HuggingFace Embeddings</span>
+                </div>
+            </div>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <h4>Relational OLTP (PostgreSQL)</h4>
+                    <p>The immutable ledger for system events. Focused on data integrity, foreign key constraints, and fast localized writes.</p>
+                    <ul>
+                        <li><strong>Asynchronous ORM:</strong> Engine configured via <code>postgresql+asyncpg://</code> to allow non-blocking database queries concurrent with the FastAPI server load.</li>
+                        <li><strong>Schema Design:</strong> <code>incidents</code> table utilizes native PostgreSQL <code>JSONB</code> columns to handle highly variable incoming webhook payloads without strict column refactors. <code>agent_logs</code> table utilizes <code>ondelete='CASCADE'</code> foreign keys to maintain referential integrity.</li>
+                        <li><strong>Migrations:</strong> Automated schema version control via Alembic (`alembic upgrade head`), ensuring reproducible CI/CD environments.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>Retrieval Augmented Generation (RAG Memory)</h4>
+                    <p>A long-term semantic memory architecture allowing the AI agents to leverage historical playbooks and prior automated resolutions.</p>
+                    <ul>
+                        <li><strong>Vector Database (Qdrant):</strong> Deployed locally via Docker. Exposes a fast gRPC/REST interface for massive similarity searches.</li>
+                        <li><strong>Local Embeddings Pipeline:</strong> Integrated with <code>langchain</code> and <code>sentence-transformers</code> (HuggingFace <code>all-MiniLM-L6-v2</code>). Operates 100% locally on CPU to convert complex Agent reasoning text into 384-dimensional mathematical arrays.</li>
+                        <li><strong>Cosine Similarity Match:</strong> When a new alert hits the Kafka pipeline, the payload is embedded and compared against Qdrant via Cosine Similarity. The top 3 closest historical matches are injected directly into the Triage Agent's prompt context window.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">4. Agentic AI & Autonomy (Machine Learning)</div>
+
+        <div class="doc-block ai">
+            <div class="doc-header">
+                <h3>Multi-Agent Workflow & execution</h3>
+                <div class="tag-container">
+                    <span class="tag">CrewAI</span>
+                    <span class="tag">LangChain</span>
+                    <span class="tag">Google Gemini 2.0 Flash</span>
+                    <span class="tag">Model Context Protocol (MCP)</span>
+                    <span class="tag">Slack API (HITL)</span>
+                </div>
+            </div>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <h4>Sequential Orchestration</h4>
+                    <p>A highly customized adaptation of the CrewAI framework designed for linear, fault-tolerant infrastructure diagnostics.</p>
+                    <ul>
+                        <li><strong>Triage Agent:</strong> Parses raw JSON payloads against RAG memory to assign a standardized Severity Score (Critical, High, Medium, Low).</li>
+                        <li><strong>Log Analyst Agent:</strong> Utilizes specialized regex prompts and token-optimized context windows to parse noisy Docker/Kubernetes stack traces.</li>
+                        <li><strong>Correlator Agent:</strong> Deduplicates concurrent Kafka events (e.g., matching a database timeout alert with a high CPU alert).</li>
+                        <li><strong>Compliance Agent:</strong> Hard-coded guardrails that validate proposed fixes against standard security policies before execution.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>Standardized Tooling (MCP)</h4>
+                    <p>Implementing the open-source Model Context Protocol to give AI Agents standardized, safe read/write access to external systems.</p>
+                    <ul>
+                        <li><strong>Infrastructure Abstraction:</strong> MCP Servers act as isolated sandboxes. The "Kubernetes MCP" exposes specific SDK wrappers allowing the Fixer Agent to restart failed pods or scale deployments dynamically.</li>
+                        <li><strong>Human-in-the-loop (HITL):</strong> Hardcoded execution halts. If the Correlator Agent detects a SEV-1 incident, the workflow pauses and invokes a Slack Webhook. The pipeline is suspended utilizing <code>asyncio.Event</code> until human authorization via Slack API triggers the pipeline to resume.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">5. Infrastructure & DevOps</div>
+
+        <div class="doc-block infra">
+            <div class="doc-header">
+                <h3>Containerization & Resilience</h3>
+                <div class="tag-container">
+                    <span class="tag">Docker</span>
+                    <span class="tag">Docker Compose</span>
+                    <span class="tag">Zookeeper (Kraft)</span>
+                    <span class="tag">Chaos Engineering</span>
+                </div>
+            </div>
+            <div class="tech-list">
+                <div class="tech-item">
+                    <h4>Microservice Orchestration</h4>
+                    <p>The entire platform is defined as Infrastructure as Code (IaC) via a master <code>docker-compose.yml</code>.</p>
+                    <ul>
+                        <li><strong>Network Topology:</strong> A unified Docker bridge network allowing high-speed internal DNS resolution between the Node.js Producer, Kafka Broker, Python Consumer, PostgreSQL Database, and Qdrant Vector DB.</li>
+                        <li><strong>Persistent Volumes:</strong> Docker named volumes (<code>postgres_data</code>, <code>qdrant_data</code>) to ensure data permanence across container destruction and recreation lifecycles.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>Testing & Chaos Engineering</h4>
+                    <p>The system is designed to handle failure, making it highly testable and robust for production pipelines.</p>
+                    <ul>
+                        <li><strong>CI/CD Integration:</strong> Github Actions pipeline executing standard Python <code>Flake8</code> linting, Node.js <code>ESLint</code>, and unit tests upon Pull Request generation.</li>
+                        <li><strong>Simulated Disaster Recovery:</strong> Utilizing Chaos Engineering principles to intentionally destroy internal Docker containers during runtime to test the NightOwl agent's ability to ingest the resulting Grafana alert, diagnose the failure, and autonomously execute a reboot script via MCP tooling entirely unassisted.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
