@@ -32,7 +32,7 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What We've Built (Days 1-8)
+## What We've Built (Days 1-12)
 
 ### 1. The API Gateway (FastAPI)
 The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
@@ -57,12 +57,21 @@ Our first CrewAI agent. Uses OpenRouter (Gemini 2.0 Flash) to parse raw infrastr
 ### 7. The Log Analyst Agent
 Our second CrewAI agent. Designed specifically to parse noisy Java/Python stack traces, ignore the framework garbage, and extract the exact `root_cause`, `error_type`, and `culprit_file` that caused a server crash.
 
+### 8. The Correlator & Fixer Agents
+Sequential AI pipeline mapping raw alerts into Triage -> Log Analysis -> Correlation, capped off by a strict "Human-in-the-Loop" Fixer agent designed to evaluate risk before executing infrastructure commands.
+
+### 9. Model Context Protocol (MCP) Foundation
+Built an isolating Tool Server architecture using Anthropic's Model Context Protocol. The AI "Brain" is completely decoupled from the Infrastructure "Hands", ensuring zero direct API access and maximum security.
+
+### 10. Kubernetes MCP Tool Server
+A standalone, sandboxed Python MCP Server that exposes strictly approved functions (Restart Pod, Scale Deployment) to the Agent Gateway via standard JSON-RPC over `stdio`.
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
 - [x] Phase 2: Agent Gateway (FastAPI + CrewAI + Triage Agent)
 - [x] Phase 3: Event Dispatcher (Node.js)
-- [ ] Phase 4: MCP Tool Server
+- [x] Phase 4: MCP Tool Server
 - [ ] Phase 5: AI Agents
 - [ ] Phase 6: Frontend Dashboard
 - [ ] Phase 7: Observability & Monitoring
@@ -72,13 +81,14 @@ Our second CrewAI agent. Designed specifically to parse noisy Java/Python stack 
 
 ```bash
 git clone https://github.com/aditya153/NightOwl-SRE-Platform.git
-cd NightOwl-SRE-Platform/services/agent-gateway
+cd NightOwl-SRE-Platform
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r services/agent-gateway/requirements.txt
+cd services/agent-gateway
 ```
 
-Create a `.env` file with your OpenRouter API key, then run:
+Create a `services/agent-gateway/.env` file with your OpenRouter API key, then run:
 
 ```bash
 uvicorn main:app --reload --port 8000
