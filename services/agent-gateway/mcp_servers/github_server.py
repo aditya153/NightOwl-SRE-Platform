@@ -31,5 +31,20 @@ def create_pull_request(owner: str, repo: str, title: str, body: str, head: str,
     else:
         return f"Failed to create PR. Status: {response.status_code}, Error: {response.text}"
 
+@mcp.tool()
+def create_issue_comment(owner: str, repo: str, issue_number: int, body: str) -> str:
+    headers = get_github_headers()
+    url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/issues/{issue_number}/comments"
+    data = {"body": body}
+    
+    with httpx.Client() as client:
+        response = client.post(url, headers=headers, json=data)
+        
+    if response.status_code == 201:
+        comment_data = response.json()
+        return f"Successfully created comment on issue #{issue_number}: {comment_data.get('html_url')}"
+    else:
+        return f"Failed to create comment. Status: {response.status_code}, Error: {response.text}"
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
