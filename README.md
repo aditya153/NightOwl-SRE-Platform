@@ -32,7 +32,7 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What We've Built (Days 1-12)
+## What We've Built (Days 1-14)
 
 ### 1. The API Gateway (FastAPI)
 The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
@@ -66,13 +66,19 @@ Built an isolating Tool Server architecture using Anthropic's Model Context Prot
 ### 10. Kubernetes MCP Tool Server
 A standalone, sandboxed Python MCP Server that exposes strictly approved functions (Restart Pod, Scale Deployment) to the Agent Gateway via standard JSON-RPC over `stdio`.
 
+### 11. GitHub MCP Tool Server
+A second sandboxed MCP Server that allows agents to securely interact with GitHub's REST API. Exposes two approved tools: Create Pull Request and Create Issue Comment. The AI never sees the GitHub token directly.
+
+### 12. Agent & Tool Synchronization
+Rewired the Fixer Agent to dynamically discover and load tools from the Kubernetes and GitHub MCP Servers at runtime via the `AgentMCPClient`. The agent no longer uses hardcoded simulation tools. Includes a full integration test with realistic mock incident data (OOMKilled pod with cascading API failures).
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
 - [x] Phase 2: Agent Gateway (FastAPI + CrewAI + Triage Agent)
 - [x] Phase 3: Event Dispatcher (Node.js)
 - [x] Phase 4: MCP Tool Server
-- [ ] Phase 5: AI Agents
+- [/] Phase 5: AI Agents (In Progress)
 - [ ] Phase 6: Frontend Dashboard
 - [ ] Phase 7: Observability & Monitoring
 - [ ] Phase 8: CI/CD & Deployment
