@@ -32,7 +32,7 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What We've Built (Days 1-14)
+## What We've Built (Days 1-15)
 
 ### 1. The API Gateway (FastAPI)
 The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
@@ -71,6 +71,9 @@ A second sandboxed MCP Server that allows agents to securely interact with GitHu
 
 ### 12. Agent & Tool Synchronization
 Rewired the Fixer Agent to dynamically discover and load tools from the Kubernetes and GitHub MCP Servers at runtime via the `AgentMCPClient`. The agent no longer uses hardcoded simulation tools. Includes a full integration test with realistic mock incident data (OOMKilled pod with cascading API failures).
+
+### 13. Mid-point Review & End-to-End Pipeline
+Wired the complete autonomous pipeline: Grafana Alert -> Kafka -> Triage Agent -> Log Analyst Agent -> Correlator Agent -> Fixer Agent (with live MCP tools). Every incoming Kafka alert now flows through all 4 agents sequentially with full database logging at each stage. Refactored duplicated code across all agents into a shared `agents/utils.py` utility module, eliminating ~22 lines of technical debt.
 
 ## Development Progress
 
