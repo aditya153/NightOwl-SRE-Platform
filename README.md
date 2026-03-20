@@ -32,7 +32,7 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What We've Built (Days 1-15)
+## What We've Built (Days 1-16)
 
 ### 1. The API Gateway (FastAPI)
 The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
@@ -75,6 +75,9 @@ Rewired the Fixer Agent to dynamically discover and load tools from the Kubernet
 ### 13. Mid-point Review & End-to-End Pipeline
 Wired the complete autonomous pipeline: Grafana Alert -> Kafka -> Triage Agent -> Log Analyst Agent -> Correlator Agent -> Fixer Agent (with live MCP tools). Every incoming Kafka alert now flows through all 4 agents sequentially with full database logging at each stage. Refactored duplicated code across all agents into a shared `agents/utils.py` utility module, eliminating ~22 lines of technical debt.
 
+### 14. Frontend Dashboard (React + Vite + Tailwind CSS)
+Initialized the NightOwl Dashboard as a React + Vite application with Tailwind CSS v4 and a custom dark theme design system (`owl-bg`, `owl-surface`, `owl-blue`, `owl-purple`, `owl-green`). Established the scalable folder structure: `pages/` (Dashboard, Incidents, Agents), `components/` (Sidebar), and `hooks/` (API data fetching). Configured Vite to proxy API requests to the FastAPI backend.
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
@@ -82,7 +85,7 @@ Wired the complete autonomous pipeline: Grafana Alert -> Kafka -> Triage Agent -
 - [x] Phase 3: Event Dispatcher (Node.js)
 - [x] Phase 4: MCP Tool Server
 - [/] Phase 5: AI Agents (In Progress)
-- [ ] Phase 6: Frontend Dashboard
+- [/] Phase 6: Frontend Dashboard (In Progress)
 - [ ] Phase 7: Observability & Monitoring
 - [ ] Phase 8: CI/CD & Deployment
 
