@@ -1,12 +1,6 @@
 import json
-import re
-from crewai import Agent, Task, Crew, Process, LLM
-from config import settings
-
-llm = LLM(
-    model=f"openrouter/{settings.OPENROUTER_MODEL}",
-    api_key=settings.OPENROUTER_API_KEY,
-)
+from crewai import Agent, Task, Crew, Process
+from .utils import llm, clean_json_response
 
 correlator_agent = Agent(
     role="Senior Incident Commander",
@@ -20,12 +14,6 @@ correlator_agent = Agent(
     llm=llm,
     verbose=False,
 )
-
-def clean_json_response(raw: str) -> str:
-    cleaned = raw.strip()
-    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-    cleaned = re.sub(r"\s*```$", "", cleaned)
-    return cleaned.strip()
 
 def run_correlation(alerts: list[str]) -> dict:
     alerts_text = "\n\n---\n\n".join(alerts)

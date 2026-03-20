@@ -1,12 +1,6 @@
 import json
-import re
-from crewai import Agent, Task, Crew, Process, LLM
-from config import settings
-
-llm = LLM(
-    model=f"openrouter/{settings.OPENROUTER_MODEL}",
-    api_key=settings.OPENROUTER_API_KEY,
-)
+from crewai import Agent, Task, Crew, Process
+from .utils import llm, clean_json_response
 
 triage_agent = Agent(
     role="Senior SRE Triage Specialist",
@@ -21,12 +15,6 @@ triage_agent = Agent(
     llm=llm,
     verbose=False,
 )
-
-def clean_json_response(raw: str) -> str:
-    cleaned = raw.strip()
-    cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-    cleaned = re.sub(r"\s*```$", "", cleaned)
-    return cleaned.strip()
 
 def run_triage(alert_text: str) -> dict:
     triage_task = Task(
