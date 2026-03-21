@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
 const mockIncidents = [
-  { id: "NO-GRA-1422", title: "API Gateway OOMKilled", severity: "CRITICAL", status: "RESOLVED", agent: "Fixer Agent", time: "10m ago", root_cause: "TransactionHandler loop exceeded batch limits." },
-  { id: "NO-GRA-1421", title: "Database CPU Spike", severity: "HIGH", status: "ANALYZING", agent: "Correlator", time: "25m ago", root_cause: "High volume of unindexed SELECT queries." },
-  { id: "NO-GRA-1420", title: "Kafka Consumer Lag", severity: "MEDIUM", status: "OPEN", agent: "Triage", time: "1h ago", root_cause: "Pending" }
+  { id: "INC-8821", title: "API Gateway OOMKilled", severity: "CRITICAL", status: "Investigating", agent: "Triage", time: "2m ago", root_cause: "us-east-1 | cluster-prod-01" },
+  { id: "INC-8819", title: "Database CPU Spike", severity: "HIGH", status: "Correlating", agent: "Correlator", time: "15m ago", root_cause: "postgres-xl-main | query-latency+200%" },
+  { id: "INC-8815", title: "Redis Memory Leak", severity: "MEDIUM", status: "Resolved", agent: "Fixer", time: "1h ago", root_cause: "cache-layer-04 | evicted-keys-high" }
 ];
 
 export default function Incidents() {
@@ -11,77 +11,105 @@ export default function Incidents() {
 
   const getSeverityStyle = (severity) => {
     switch (severity) {
-      case 'CRITICAL': return 'text-[#ffb4ab] bg-[#93000a] shadow-[0_0_8px_#93000a]';
-      case 'HIGH': return 'text-[#1a1c1c] bg-[#e2e2e2] shadow-[0_0_8px_#ffffff]'; // High contrast inverted
-      case 'MEDIUM': return 'text-[#d8e2ff] bg-[#004395] shadow-[0_0_8px_#005ac2]'; // Deep blue
-      default: return 'text-owl-muted bg-owl-focus';
+      case 'CRITICAL': return 'bg-error-container/20 text-error border-error/30 neon-glow-error';
+      case 'HIGH': return 'bg-tertiary-fixed-dim/20 text-tertiary border-tertiary/30 neon-glow-tertiary';
+      case 'MEDIUM': return 'bg-secondary-container/50 text-secondary border-outline-variant/50 neon-glow-secondary';
+      default: return 'bg-surface-variant text-on-surface';
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'RESOLVED': return 'bg-[#e5e2e1]';
-      case 'ANALYZING': return 'bg-[#4d8eff] animate-pulse';
-      case 'OPEN': return 'bg-[#ffb4ab]';
-      default: return 'bg-[#c6c6c6]';
-    }
+  const getStatusDot = (status, severity) => {
+    if (status === 'Resolved') return <span className="material-symbols-outlined text-[14px] text-on-surface-variant">check_circle</span>;
+    let color = 'bg-surface-variant';
+    if (severity === 'CRITICAL') color = 'bg-error animate-pulse';
+    else if (severity === 'HIGH') color = 'bg-tertiary-container animate-pulse';
+    else if (severity === 'MEDIUM') color = 'bg-secondary-container';
+    
+    return <div className={`w-1.5 h-1.5 rounded-full ${color}`}></div>;
   };
 
   return (
-    <div className="p-10 h-full max-h-screen overflow-y-auto font-sans tracking-tight">
-      <div className="flex justify-between items-end mb-10">
-        <div>
-          <p className="text-[#8b949e] uppercase tracking-[0.05em] text-xs font-display mb-2">Observatory</p>
-          <h1 className="text-4xl font-bold text-[#ffffff] tracking-[-0.02em]">Incident Master List</h1>
-        </div>
-        <div className="flex gap-4">
-          <input 
-            type="text" 
-            placeholder="Search incident ID..." 
-            className="px-5 py-2.5 bg-[#1c1b1b] text-[#e5e2e1] font-mono text-sm focus:outline-none focus:bg-[#353534] transition-colors placeholder-[#474747] w-64"
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-[1px] bg-[#2a2a2a] p-[1px] rounded-sm">
-        {/* Header Row */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#131313] text-[#c6c6c6] text-[11px] uppercase tracking-wider font-display shrink-0">
-          <div className="col-span-2">Incident ID</div>
-          <div className="col-span-4">Pattern / Root Cause</div>
-          <div className="col-span-2">Severity</div>
-          <div className="col-span-2">Status</div>
-          <div className="col-span-2 text-right">Time</div>
-        </div>
-
-        {/* Data Rows - Zebra Striping via surface_container variables */}
-        <div className="flex flex-col gap-[1px]">
-          {incidents.map((incident, i) => (
-            <div 
-              key={incident.id} 
-              className={`grid grid-cols-12 gap-4 px-6 py-5 items-center group cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#1c1b1b]' : 'bg-[#131313]'} hover:bg-[#2a2a2a]`}
-            >
-              <div className="col-span-2 text-[#e5e2e1] font-mono text-xs">{incident.id}</div>
-              <div className="col-span-4 pr-4">
-                <div className="text-[#ffffff] font-medium text-sm mb-1 group-hover:text-[#4d8eff] transition-colors">{incident.title}</div>
-                <div className="text-[#919191] text-xs font-mono truncate">{incident.root_cause}</div>
-              </div>
-              <div className="col-span-2">
-                <span className={`px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-sm ${getSeverityStyle(incident.severity)}`}>
-                  {incident.severity}
-                </span>
-              </div>
-              <div className="col-span-2 flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(incident.status)}`}></div>
-                  <span className="text-xs text-[#e5e2e1]">{incident.status}</span>
-                </div>
-                <div className="text-[10px] text-[#5d5f5f] uppercase tracking-widest">{incident.agent}</div>
-              </div>
-              <div className="col-span-2 text-right text-[#919191] text-xs font-mono">{incident.time}</div>
+    <section className="flex-1 overflow-y-auto p-12 pr-80 pb-20 border-r border-outline-variant/10 relative h-full">
+      <div className="mb-8">
+        <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2 font-headline">Active Engineering Incidents</h2>
+        <p className="text-on-surface-variant text-sm font-sans mb-10">Real-time oversight of system anomalies and remediation efforts.</p>
+        
+        {/* Dashboard Bento Stats */}
+        <div className="grid grid-cols-3 gap-6 mb-10">
+          <div className="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-symbols-outlined text-6xl">priority_high</span>
             </div>
-          ))}
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Active Critical</p>
+            <p className="text-4xl font-black text-error font-sans">03</p>
+          </div>
+          <div className="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-symbols-outlined text-6xl">query_stats</span>
+            </div>
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Mean Time to Resolve</p>
+            <p className="text-4xl font-black text-white font-sans">14<span className="text-lg font-normal ml-1 text-on-surface-variant">min</span></p>
+          </div>
+          <div className="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-symbols-outlined text-6xl">robot_2</span>
+            </div>
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Agent Participation</p>
+            <p className="text-4xl font-black text-tertiary font-sans">98<span className="text-lg font-normal ml-1 text-on-surface-variant">%</span></p>
+          </div>
+        </div>
+
+        {/* Incidents Table */}
+        <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl border border-outline-variant/5">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-surface-container-low/50">
+                <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">ID</th>
+                <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Incident Title</th>
+                <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Severity</th>
+                <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Status</th>
+                <th className="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant text-right">Time</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/5">
+              {incidents.map((incident) => (
+                <tr key={incident.id} className="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+                  <td className="px-6 py-5 font-mono text-xs text-on-surface-variant">{incident.id}</td>
+                  <td className="px-6 py-5">
+                    <div className="flex flex-col">
+                      <span className="text-white font-bold group-hover:text-tertiary transition-colors font-sans">{incident.title}</span>
+                      <span className="text-[10px] text-on-surface-variant/60 font-mono mt-0.5">{incident.root_cause}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className={`border text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter ${getSeverityStyle(incident.severity)}`}>
+                      {incident.severity}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-2">
+                      {getStatusDot(incident.status, incident.severity)}
+                      <span className="text-xs text-white font-sans">{incident.status}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">{incident.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="bg-surface-container-low/30 px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
+            <span class="text-xs text-on-surface-variant font-sans">Showing {incidents.length} active incidents</span>
+            <div className="flex gap-2">
+              <button className="p-1 hover:bg-surface-container-high transition-colors rounded-sm text-on-surface-variant cursor-pointer">
+                <span className="material-symbols-outlined text-sm pt-1">chevron_left</span>
+              </button>
+              <button className="p-1 hover:bg-surface-container-high transition-colors rounded-sm text-on-surface-variant cursor-pointer">
+                <span className="material-symbols-outlined text-sm pt-1">chevron_right</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

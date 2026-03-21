@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NightOwl | Incident Command</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#c6c6c6",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-error": "#690005",
+                        "primary-fixed": "#5d5f5f",
+                        "on-tertiary": "#001a42",
+                        "inverse-primary": "#5d5f5f",
+                        "error-container": "#93000a",
+                        "surface-variant": "#353534",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary-fixed-variant": "#d8e2ff",
+                        "on-tertiary-fixed": "#ffffff",
+                        "on-secondary-fixed-variant": "#3b3b3b",
+                        "tertiary-fixed": "#005ac2",
+                        "surface-tint": "#c6c6c7",
+                        "secondary": "#c8c6c6",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#acabaa",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#e4e2e1",
+                        "primary-container": "#d4d4d4",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-bright": "#3a3939",
+                        "tertiary": "#d8e2ff",
+                        "on-tertiary-container": "#000000",
+                        "surface": "#131313",
+                        "on-primary-container": "#000000",
+                        "on-primary": "#1a1c1c",
+                        "primary": "#ffffff",
+                        "tertiary-container": "#4d8eff",
+                        "outline": "#919191",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#454747",
+                        "on-primary-fixed": "#ffffff",
+                        "secondary-container": "#474747",
+                        "surface-dim": "#131313",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed-variant": "#e2e2e2",
+                        "on-secondary": "#1b1c1c",
+                        "outline-variant": "#474747",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed-dim": "#004395",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-fixed": "#c8c6c6",
+                        "background": "#131313"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .neon-glow-error { box-shadow: 0 0 8px #93000a; }
+        .neon-glow-tertiary { box-shadow: 0 0 8px #4d8eff; }
+        .neon-glow-primary { box-shadow: 0 0 8px #ffffff; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar Integration -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0E0E0E] flex flex-col py-8 px-4 gap-y-6 shadow-[40px_0_40px_rgba(0,0,0,0.4)] z-50">
+<div class="flex items-center gap-3 px-4 mb-4">
+<div class="w-8 h-8 bg-white flex items-center justify-center rounded-sm">
+<span class="material-symbols-outlined text-black text-xl" style="font-variation-settings: 'FILL' 1;">visibility</span>
+</div>
+<div>
+<h1 class="text-xl font-black tracking-tighter text-white uppercase leading-none">NightOwl</h1>
+<p class="text-[10px] text-on-surface-variant font-mono tracking-widest uppercase mt-1">Incident Command</p>
+</div>
+</div>
+<nav class="flex flex-col gap-y-1">
+<a class="text-white bg-[#2A2A2A] rounded-md px-4 py-2 font-bold flex items-center gap-3 transition-all duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined text-sm">dashboard</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Dashboard</span>
+</a>
+<a class="text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Incidents</span>
+</a>
+<a class="text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-sm">smart_toy</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Agents</span>
+</a>
+<a class="text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Logs</span>
+</a>
+<a class="text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span class="font-['Inter'] font-medium text-sm tracking-tight">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 flex items-center gap-3 border-t border-outline-variant/10">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Portrait of a modern software engineer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1kL32nm4QQT36JYrf9QB8vg0_klrTvRauf_xhOMa3Njme27gcmlbhsd9lPX6us_S-kfDvPMbitoU6EaJy9dns_frSbVPwZdHPeq1L1y2yZVL5XuPkRuGh1BrHeA6zZmFtIxR_-UgAwZ3XB1E_4bxLCvtZyfKxlFx3PTMG0nt23qTL0CZjfPARcqgC2Z24yJNh_Z8kMWY2Zt5k7bOi8tjF19Hao7WACQ3GvWZdOEP9oOt4sMHXOasxSUqd_qybVkSBZHX-X-kLG-bU"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold text-white truncate">alex.dev</p>
+<p class="text-[10px] text-on-surface-variant truncate">Lead SRE</p>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Integration -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-[#131313]/60 backdrop-blur-xl flex items-center justify-between px-8 z-40">
+<div class="flex items-center gap-4">
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">System Status</span>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary neon-glow-primary"></span>
+<span class="text-sm font-medium text-white">All Engines Nominal</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-highest text-sm rounded-md border-none focus:ring-1 focus:ring-tertiary/20 pl-10 pr-4 py-1.5 w-64 transition-all" placeholder="Search incidents, logs, or agents..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#C6C6C6] hover:text-white transition-opacity">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-[#C6C6C6] hover:text-white transition-opacity">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="bg-primary text-on-primary font-bold text-xs px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
+                    NEW INCIDENT
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 h-screen flex">
+<!-- Incident Master List -->
+<section class="flex-1 overflow-y-auto p-8 border-r border-outline-variant/10">
+<div class="mb-8">
+<h2 class="text-3xl font-extrabold tracking-tight text-white mb-2">Active Engineering Incidents</h2>
+<p class="text-on-surface-variant text-sm">Real-time oversight of system anomalies and remediation efforts.</p>
+</div>
+<!-- Dashboard Bento Stats (Optional flair) -->
+<div class="grid grid-cols-3 gap-6 mb-10">
+<div class="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">priority_high</span>
+</div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Active Critical</p>
+<p class="text-4xl font-black text-error">03</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">query_stats</span>
+</div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Mean Time to Resolve</p>
+<p class="text-4xl font-black text-white">14<span class="text-lg font-normal ml-1">min</span></p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">robot_2</span>
+</div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Agent Participation</p>
+<p class="text-4xl font-black text-tertiary">98<span class="text-lg font-normal ml-1">%</span></p>
+</div>
+</div>
+<!-- Incidents Table -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">ID</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Incident Title</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Severity</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Status</th>
+<th class="px-6 py-4 font-label text-[10px] uppercase tracking-[0.15em] text-on-surface-variant text-right">Time</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Incident 1 -->
+<tr class="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">INC-8821</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-white font-bold group-hover:text-tertiary transition-colors">API Gateway OOMKilled</span>
+<span class="text-[10px] text-on-surface-variant/60 font-mono">us-east-1 | cluster-prod-01</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-error-container/20 text-error border border-error/30 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter neon-glow-error">CRITICAL</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></div>
+<span class="text-xs text-white">Investigating</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">2m ago</td>
+</tr>
+<!-- Incident 2 -->
+<tr class="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">INC-8819</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-white font-bold group-hover:text-tertiary transition-colors">Database CPU Spike</span>
+<span class="text-[10px] text-on-surface-variant/60 font-mono">postgres-xl-main | query-latency+200%</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-tertiary-fixed-dim/20 text-tertiary border border-tertiary/30 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">HIGH</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary-container"></div>
+<span class="text-xs text-white">Correlating</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">15m ago</td>
+</tr>
+<!-- Incident 3 -->
+<tr class="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">INC-8815</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-white font-bold group-hover:text-tertiary transition-colors">Redis Memory Leak</span>
+<span class="text-[10px] text-on-surface-variant/60 font-mono">cache-layer-04 | evicted-keys-high</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-secondary-container/50 text-secondary border border-outline-variant/50 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">MEDIUM</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="text-xs">Resolved</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">1h ago</td>
+</tr>
+<!-- Incident 4 -->
+<tr class="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+<td class="px-6 py-5 font-mono text-xs text-on-surface-variant">INC-8812</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-white font-bold group-hover:text-tertiary transition-colors">Auth0 Webhook Timeout</span>
+<span class="text-[10px] text-on-surface-variant/60 font-mono">identity-svc | external-dependency</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="bg-tertiary-fixed-dim/20 text-tertiary border border-tertiary/30 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter">HIGH</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+<span class="text-xs text-white">Escalated</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">3h ago</td>
+</tr>
+</tbody>
+</table>
+<div class="bg-surface-container-low/30 px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Showing 4 of 12 active incidents</span>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-surface-container-high transition-colors rounded-sm">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="p-1 hover:bg-surface-container-high transition-colors rounded-sm">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side Panel: Live Agent Status -->
+<aside class="w-80 bg-surface-container-lowest flex flex-col p-6 gap-y-8 overflow-y-auto">
+<div class="flex items-center justify-between">
+<h3 class="font-label text-xs uppercase tracking-[0.2em] text-white">Live Agents</h3>
+<span class="flex items-center gap-1.5 bg-tertiary-container/10 text-tertiary px-2 py-0.5 rounded-full text-[10px] font-bold">
+<span class="w-1 h-1 bg-tertiary rounded-full animate-ping"></span>
+                    ACTIVE
+                </span>
+</div>
+<div class="space-y-6">
+<!-- Triage Bot -->
+<div class="bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 bg-tertiary-container/20 rounded-md flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">robot</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white">Triage Bot</p>
+<p class="text-[10px] text-on-surface-variant">L7 Pattern Matcher</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-[#00FF41] shadow-[0_0_8px_#00FF41]"></div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded font-mono text-[10px] text-[#00FF41] leading-relaxed">
+<p class="opacity-50 text-[8px] mb-1 uppercase tracking-widest">Thought Stream</p>
+<p>&gt; Scanning API logs for stack traces...</p>
+<p>&gt; 404/500 density threshold exceeded</p>
+<p>&gt; Routing to Network Engine...</p>
+</div>
+</div>
+<!-- Log Analyst -->
+<div class="bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 bg-surface-container-highest rounded-md flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white">Log Analyst</p>
+<p class="text-[10px] text-on-surface-variant">NLP Root Cause</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-[#00FF41] shadow-[0_0_8px_#00FF41]"></div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded font-mono text-[10px] text-on-surface-variant/80 leading-relaxed">
+<p class="opacity-50 text-[8px] mb-1 uppercase tracking-widest text-on-surface-variant">Thought Stream</p>
+<p>&gt; Identifying memory leak patterns...</p>
+<p>&gt; Heap size growth: +4.2GB/min</p>
+<p>&gt; GC cycle failure detected in svc-01</p>
+</div>
+</div>
+<!-- Correlator -->
+<div class="bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 bg-error-container/20 rounded-md flex items-center justify-center text-error">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<div>
+<p class="text-xs font-bold text-white">Correlator</p>
+<p class="text-[10px] text-on-surface-variant">Graph Logic</p>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-[#00FF41] shadow-[0_0_8px_#00FF41]"></div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded font-mono text-[10px] text-tertiary leading-relaxed">
+<p class="opacity-50 text-[8px] mb-1 uppercase tracking-widest text-on-surface-variant">Thought Stream</p>
+<p>&gt; Correlating with previous incident #124...</p>
+<p>&gt; Cluster deploy dependency match: 92%</p>
+<p>&gt; Recommended Action: Rollback v2.4.1</p>
+</div>
+</div>
+</div>
+<div class="mt-auto bg-surface-container-high/40 p-4 rounded-lg">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-3">System Health Map</p>
+<div class="grid grid-cols-8 gap-1.5">
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-error rounded-sm neon-glow-error"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-error rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-tertiary rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+<div class="aspect-square bg-[#00FF41] rounded-sm opacity-80"></div>
+</div>
+</div>
+</aside>
+</main>
+</body></html>
