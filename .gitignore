@@ -31,5 +31,8 @@ build/
 .vscode/
 .idea/
 
+# Claude Code settings (may contain secrets)
+.claude/
+
 # Logs
 *.log
