@@ -91,7 +91,11 @@ def run_fixer(incident_context: str) -> dict:
     result = crew.kickoff()
 
     for client in clients:
-        loop.run_until_complete(client.disconnect())
+        try:
+            loop.run_until_complete(client.disconnect())
+        except RuntimeError:
+            # anyio throws this if context is closed from a different asyncio task
+            pass
     loop.close()
 
     raw_text = result.raw.strip()
