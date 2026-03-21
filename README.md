@@ -32,7 +32,7 @@
 4. **AI Agents** (Triage, Log Analyst, Correlator, Fixer, Security, Compliance) analyze and resolve incidents
 5. **MCP Tool Server** provides standardized tool access to infrastructure (K8s, GitHub, Prometheus, etc.)
 
-## What We've Built (Days 1-16)
+## What We've Built (Days 1-17)
 
 ### 1. The API Gateway (FastAPI)
 The central "Brain" service built with FastAPI. Handles incoming Kafka events, validates data using Pydantic models, and routes alerts to the right AI agents.
@@ -77,6 +77,9 @@ Wired the complete autonomous pipeline: Grafana Alert -> Kafka -> Triage Agent -
 
 ### 14. Frontend Dashboard (React + Vite + Tailwind CSS)
 Initialized the NightOwl Dashboard as a React + Vite application with Tailwind CSS v4 and a custom dark theme design system (`owl-bg`, `owl-surface`, `owl-blue`, `owl-purple`, `owl-green`). Established the scalable folder structure: `pages/` (Dashboard, Incidents, Agents), `components/` (Sidebar), and `hooks/` (API data fetching). Configured Vite to proxy API requests to the FastAPI backend.
+
+### 15. Master Incident List & Agent Sidebar
+Built the comprehensive "Incident Master List" visual layout and a collapsible "Live Agent Status" sidebar. Populated the UI with rich mock data demonstrating the severity color-coding systems (Critical/Red, High/Yellow, Medium/Blue) and live agent activity streams. The UI correctly renders the state of the backend AI agents (Triage, Log Analyst, Correlator, Fixer).
 
 ## Development Progress
 
