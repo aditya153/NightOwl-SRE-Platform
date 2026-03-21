@@ -55,7 +55,7 @@ export default function AgentSidebar({ isOpen, setIsOpen }) {
   }
 
   return (
-    <aside className="w-80 bg-surface-container-lowest flex flex-col p-6 gap-y-8 overflow-y-auto border-l border-outline-variant/10 relative transition-all duration-300">
+    <aside className="w-80 shrink-0 bg-surface-container-lowest flex flex-col p-6 gap-y-8 overflow-y-auto border-l border-outline-variant/10 relative transition-all duration-300 z-30">
       <button 
         onClick={() => setIsOpen(false)}
         className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors"

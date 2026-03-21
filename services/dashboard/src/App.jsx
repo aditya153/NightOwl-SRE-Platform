@@ -17,7 +17,7 @@ function App() {
   if (path === '/agents') Page = Agents
 
   return (
-    <div className="flex min-h-screen bg-surface text-on-surface overflow-hidden relative font-sans selection:bg-primary selection:text-on-primary">
+    <div className="flex min-h-screen bg-surface text-on-surface overflow-x-auto relative font-sans selection:bg-primary selection:text-on-primary min-w-[1280px]">
       {/* 256px Left Sidebar */}
       <Sidebar />
       
