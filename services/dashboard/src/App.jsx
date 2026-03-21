@@ -14,7 +14,7 @@ function App() {
   if (path === '/agents') Page = Agents
 
   return (
-    <div className="flex min-h-screen bg-owl-bg overflow-hidden relative">
+    <div className="flex min-h-screen bg-[#131313] text-[#e5e2e1] overflow-hidden relative font-sans selection:bg-[#4d8eff]/30">
       <Sidebar />
       <main className={`flex-1 transition-all duration-300 ${isAgentSidebarOpen ? 'mr-80' : ''}`}>
          <Page />

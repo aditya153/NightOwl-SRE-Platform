@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-owl-bg: #131313;
+  --color-owl-surface: #1c1b1b;
+  --color-owl-border: #2a2a2a;
+  --color-owl-focus: #353534;
+  --color-owl-text: #e5e2e1;
+  --color-owl-muted: #c6c6c6;
+  --color-owl-blue: #4d8eff;
+  --color-owl-purple: #8a2be2;
+  --color-owl-red: #fb7185;
+  --color-owl-yellow: #fcd34d;
+  --color-owl-green: #4ade80;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-display: "Space Grotesk", sans-serif;
+}

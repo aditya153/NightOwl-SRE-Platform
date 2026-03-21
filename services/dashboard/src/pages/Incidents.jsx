@@ -1,112 +1,86 @@
 import { useState } from 'react';
 
 const mockIncidents = [
-  {
-    id: "INC-9042",
-    title: "API Gateway OOMKilled",
-    severity: "CRITICAL",
-    status: "RESOLVED",
-    agent: "Fixer",
-    timestamp: "10 mins ago",
-    root_cause: "Memory leak in /auth endpoint"
-  },
-  {
-    id: "INC-9041",
-    title: "Database CPU Spike",
-    severity: "HIGH",
-    status: "ANALYZING",
-    agent: "Correlator",
-    timestamp: "25 mins ago",
-    root_cause: "Pending log correlation..."
-  },
-  {
-    id: "INC-9040",
-    title: "Kafka Consumer Lag",
-    severity: "MEDIUM",
-    status: "OPEN",
-    agent: "Triage",
-    timestamp: "1 hour ago",
-    root_cause: "Pending"
-  }
+  { id: "NO-GRA-1422", title: "API Gateway OOMKilled", severity: "CRITICAL", status: "RESOLVED", agent: "Fixer Agent", time: "10m ago", root_cause: "TransactionHandler loop exceeded batch limits." },
+  { id: "NO-GRA-1421", title: "Database CPU Spike", severity: "HIGH", status: "ANALYZING", agent: "Correlator", time: "25m ago", root_cause: "High volume of unindexed SELECT queries." },
+  { id: "NO-GRA-1420", title: "Kafka Consumer Lag", severity: "MEDIUM", status: "OPEN", agent: "Triage", time: "1h ago", root_cause: "Pending" }
 ];
 
 export default function Incidents() {
   const [incidents] = useState(mockIncidents);
 
-  const getSeverityColor = (severity) => {
+  const getSeverityStyle = (severity) => {
     switch (severity) {
-      case 'CRITICAL': return 'bg-owl-red/20 text-owl-red border-owl-red/30';
-      case 'HIGH': return 'bg-owl-yellow/20 text-owl-yellow border-owl-yellow/30';
-      case 'MEDIUM': return 'bg-owl-blue/20 text-owl-blue border-owl-blue/30';
-      default: return 'bg-owl-muted/20 text-owl-muted border-owl-muted/30';
+      case 'CRITICAL': return 'text-[#ffb4ab] bg-[#93000a] shadow-[0_0_8px_#93000a]';
+      case 'HIGH': return 'text-[#1a1c1c] bg-[#e2e2e2] shadow-[0_0_8px_#ffffff]'; // High contrast inverted
+      case 'MEDIUM': return 'text-[#d8e2ff] bg-[#004395] shadow-[0_0_8px_#005ac2]'; // Deep blue
+      default: return 'text-owl-muted bg-owl-focus';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'RESOLVED': return 'text-owl-green';
-      case 'ANALYZING': return 'text-owl-purple animate-pulse';
-      case 'OPEN': return 'text-owl-red';
-      default: return 'text-owl-text';
+      case 'RESOLVED': return 'bg-[#e5e2e1]';
+      case 'ANALYZING': return 'bg-[#4d8eff] animate-pulse';
+      case 'OPEN': return 'bg-[#ffb4ab]';
+      default: return 'bg-[#c6c6c6]';
     }
   };
 
   return (
-    <div className="p-8 h-full max-h-screen overflow-y-auto">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-10 h-full max-h-screen overflow-y-auto font-sans tracking-tight">
+      <div className="flex justify-between items-end mb-10">
         <div>
-          <h1 className="text-3xl font-bold text-owl-purple tracking-tight">Incident Master List</h1>
-          <p className="mt-2 text-owl-muted">All alerts processed by the NightOwl AI pipeline.</p>
+          <p className="text-[#8b949e] uppercase tracking-[0.05em] text-xs font-display mb-2">Observatory</p>
+          <h1 className="text-4xl font-bold text-[#ffffff] tracking-[-0.02em]">Incident Master List</h1>
         </div>
         <div className="flex gap-4">
           <input 
             type="text" 
-            placeholder="Search incidents..." 
-            className="px-4 py-2 bg-owl-surface border border-owl-border rounded-lg text-owl-text placeholder-owl-muted focus:outline-none focus:border-owl-purple transition-colors"
+            placeholder="Search incident ID..." 
+            className="px-5 py-2.5 bg-[#1c1b1b] text-[#e5e2e1] font-mono text-sm focus:outline-none focus:bg-[#353534] transition-colors placeholder-[#474747] w-64"
           />
-          <button className="px-4 py-2 bg-owl-purple text-[#ffffff] font-medium rounded-lg hover:bg-opacity-90 transition-all">
-            Filter
-          </button>
         </div>
       </div>
 
-      <div className="bg-owl-surface border border-owl-border rounded-xl overflow-hidden shadow-xl shadow-black/20">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-owl-border bg-owl-surface/50">
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">ID</th>
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">Title & Root Cause</th>
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">Severity</th>
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">Status</th>
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">Active Agent</th>
-              <th className="py-4 px-6 text-sm font-medium text-owl-muted uppercase tracking-wider">Time</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-owl-border">
-            {incidents.map((incident) => (
-              <tr key={incident.id} className="hover:bg-owl-bg/50 transition-colors group cursor-pointer">
-                <td className="py-4 px-6 text-owl-text font-mono text-sm">{incident.id}</td>
-                <td className="py-4 px-6">
-                  <div className="text-owl-text font-medium group-hover:text-owl-blue transition-colors">{incident.title}</div>
-                  <div className="text-owl-muted text-sm mt-1">{incident.root_cause}</div>
-                </td>
-                <td className="py-4 px-6">
-                  <span className={`px-2.5 py-1 text-xs font-semibold rounded border ${getSeverityColor(incident.severity)}`}>
-                    {incident.severity}
-                  </span>
-                </td>
-                <td className="py-4 px-6">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${getStatusColor(incident.status).replace('text-', 'bg-')}`}></div>
-                    <span className={`text-sm font-medium ${getStatusColor(incident.status)}`}>{incident.status}</span>
-                  </div>
-                </td>
-                <td className="py-4 px-6 text-owl-muted text-sm">{incident.agent}</td>
-                <td className="py-4 px-6 text-owl-muted text-sm whitespace-nowrap">{incident.timestamp}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="flex flex-col gap-[1px] bg-[#2a2a2a] p-[1px] rounded-sm">
+        {/* Header Row */}
+        <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-[#131313] text-[#c6c6c6] text-[11px] uppercase tracking-wider font-display shrink-0">
+          <div className="col-span-2">Incident ID</div>
+          <div className="col-span-4">Pattern / Root Cause</div>
+          <div className="col-span-2">Severity</div>
+          <div className="col-span-2">Status</div>
+          <div className="col-span-2 text-right">Time</div>
+        </div>
+
+        {/* Data Rows - Zebra Striping via surface_container variables */}
+        <div className="flex flex-col gap-[1px]">
+          {incidents.map((incident, i) => (
+            <div 
+              key={incident.id} 
+              className={`grid grid-cols-12 gap-4 px-6 py-5 items-center group cursor-pointer transition-colors ${i % 2 === 0 ? 'bg-[#1c1b1b]' : 'bg-[#131313]'} hover:bg-[#2a2a2a]`}
+            >
+              <div className="col-span-2 text-[#e5e2e1] font-mono text-xs">{incident.id}</div>
+              <div className="col-span-4 pr-4">
+                <div className="text-[#ffffff] font-medium text-sm mb-1 group-hover:text-[#4d8eff] transition-colors">{incident.title}</div>
+                <div className="text-[#919191] text-xs font-mono truncate">{incident.root_cause}</div>
+              </div>
+              <div className="col-span-2">
+                <span className={`px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-sm ${getSeverityStyle(incident.severity)}`}>
+                  {incident.severity}
+                </span>
+              </div>
+              <div className="col-span-2 flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(incident.status)}`}></div>
+                  <span className="text-xs text-[#e5e2e1]">{incident.status}</span>
+                </div>
+                <div className="text-[10px] text-[#5d5f5f] uppercase tracking-widest">{incident.agent}</div>
+              </div>
+              <div className="col-span-2 text-right text-[#919191] text-xs font-mono">{incident.time}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
