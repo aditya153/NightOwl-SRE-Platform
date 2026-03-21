@@ -29,7 +29,7 @@ export default function Incidents() {
   };
 
   return (
-    <section className="flex-1 overflow-y-auto p-12 pr-80 pb-20 border-r border-outline-variant/10 relative h-full">
+    <section className="flex-1 overflow-y-auto p-8 border-r border-outline-variant/10 relative h-full">
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2 font-headline">Active Engineering Incidents</h2>
         <p className="text-on-surface-variant text-sm font-sans mb-10">Real-time oversight of system anomalies and remediation efforts.</p>
