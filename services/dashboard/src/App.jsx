@@ -2,6 +2,7 @@ import Sidebar from './components/Sidebar'
 import TopNav from './components/TopNav'
 import AgentSidebar from './components/AgentSidebar'
 import Incidents from './pages/Incidents'
+import IncidentDetail from './pages/IncidentDetail'
 import { useState } from 'react'
 
 function App() {
@@ -16,6 +17,9 @@ function App() {
     Page = () => <div className="p-12 flex-1 w-full"><h1 className="text-2xl font-bold font-headline text-white">System Logs</h1></div>
   } else if (path === '/settings') {
     Page = () => <div className="p-12 flex-1 w-full"><h1 className="text-2xl font-bold font-headline text-white">Settings</h1></div>
+  } else if (path.startsWith('/incident/')) {
+    const incidentId = path.split('/')[2];
+    Page = () => <IncidentDetail incidentId={incidentId} />
   } else if (path === '/') {
     Page = Incidents
   }

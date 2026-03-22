@@ -73,7 +73,11 @@ export default function Incidents() {
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
               {incidents.map((incident) => (
-                <tr key={incident.id} className="hover:bg-surface-container-high/30 transition-colors cursor-pointer group">
+                <tr 
+                  key={incident.id} 
+                  onClick={() => window.location.href = `/incident/${incident.id}`}
+                  className="hover:bg-surface-container-high/30 transition-colors cursor-pointer group"
+                >
                   <td className="px-6 py-5 font-mono text-xs text-on-surface-variant">{incident.id}</td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col">
