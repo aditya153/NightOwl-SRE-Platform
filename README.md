@@ -78,8 +78,11 @@ Wired the complete autonomous pipeline: Grafana Alert -> Kafka -> Triage Agent -
 ### 14. Frontend Dashboard (React + Vite + Tailwind CSS)
 Initialized the NightOwl Dashboard as a React + Vite application with Tailwind CSS v4 and a custom dark theme design system (`owl-bg`, `owl-surface`, `owl-blue`, `owl-purple`, `owl-green`). Established the scalable folder structure: `pages/` (Dashboard, Incidents, Agents), `components/` (Sidebar), and `hooks/` (API data fetching). Configured Vite to proxy API requests to the FastAPI backend.
 
-### 15. Master Incident List & Agent Sidebar
-Built the comprehensive "Incident Master List" visual layout and a collapsible "Live Agent Status" sidebar. Populated the UI with rich mock data demonstrating the severity color-coding systems (Critical/Red, High/Yellow, Medium/Blue) and live agent activity streams. The UI correctly renders the state of the backend AI agents (Triage, Log Analyst, Correlator, Fixer).
+### 15. AI-Assisted UI Engineering & Master Incident List
+Leveraged the external **Stitch MCP Server** to autonomously generate a "Big Tech" tier design system named *Obsidian Nocturnal*. Ported the raw HTML/Tailwind structural output directly into React components to build a highly dense, immersive Master Incident List. The layout features glassmorphism, functional TopNav search, data-rich Bento statistics (MTTR, Active Criticals), and a dynamically scalable grid system.
+
+### 16. Incident Detail View & Agent Chat Stream
+Built the interactive deep-dive view (`IncidentDetail.jsx`) for analyzing individual anomalies. The right-hand panel features an autonomous **Agent Action Stream**—a chronological terminal emulator that renders the live thoughts, logic, and actions of the Triage Bot, Log Analyst, Correlator, and Fixer agents with matrix-style glowing syntax. The left panel isolates the specific infrastructure nodes and explicitly visualizes the root cause for human validation before finalizing the remediation payload.
 
 ## Development Progress
 
