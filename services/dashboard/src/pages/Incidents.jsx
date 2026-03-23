@@ -1,20 +1,19 @@
 import { useState } from 'react';
-
-const mockIncidents = [
-  { id: "INC-8821", title: "API Gateway OOMKilled", severity: "CRITICAL", status: "Investigating", agent: "Triage", time: "2m ago", root_cause: "us-east-1 | cluster-prod-01" },
-  { id: "INC-8819", title: "Database CPU Spike", severity: "HIGH", status: "Correlating", agent: "Correlator", time: "15m ago", root_cause: "postgres-xl-main | query-latency+200%" },
-  { id: "INC-8815", title: "Redis Memory Leak", severity: "MEDIUM", status: "Resolved", agent: "Fixer", time: "1h ago", root_cause: "cache-layer-04 | evicted-keys-high" }
-];
+import { useIncidentsList } from '../hooks/useIncidents';
 
 export default function Incidents() {
-  const [incidents] = useState(mockIncidents);
+  const [activeTab, setActiveTab] = useState('All');
+  const { data: incidents = [], isLoading, isError } = useIncidentsList();
+
+  const tabs = ['All', 'Critical', 'Warnings', 'Resolved'];
 
   const getSeverityStyle = (severity) => {
     switch (severity) {
-      case 'CRITICAL': return 'bg-error-container/20 text-error border-error/30 neon-glow-error';
-      case 'HIGH': return 'bg-tertiary-fixed-dim/20 text-tertiary border-tertiary/30 neon-glow-tertiary';
-      case 'MEDIUM': return 'bg-secondary-container/50 text-secondary border-outline-variant/50 neon-glow-secondary';
-      default: return 'bg-surface-variant text-on-surface';
+      case 'CRITICAL': return 'bg-error-container/20 text-error border-error/30 neon-glow-error text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter';
+      case 'HIGH': return 'bg-tertiary-fixed-dim/20 text-tertiary border-tertiary/30 neon-glow-tertiary text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter';
+      case 'MEDIUM': return 'bg-secondary-container/50 text-secondary border-outline-variant/50 neon-glow-secondary text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter';
+      case 'LOW': return 'bg-surface-variant text-on-surface-variant border-outline-variant/30 text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter';
+      default: return 'bg-surface-variant text-on-surface text-[10px] px-2 py-0.5 rounded-sm font-bold uppercase tracking-tighter';
     }
   };
 
@@ -72,7 +71,13 @@ export default function Incidents() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
-              {incidents.map((incident) => (
+              {isLoading && (
+                <tr><td colSpan="5" className="px-6 py-8 text-center text-on-surface-variant">Loading real-time incidents...</td></tr>
+              )}
+              {isError && (
+                <tr><td colSpan="5" className="px-6 py-8 text-center text-error">Failed to synchronize with Agent Gateway.</td></tr>
+              )}
+              {!isLoading && !isError && incidents.map((incident) => (
                 <tr 
                   key={incident.id} 
                   onClick={() => window.location.href = `/incident/${incident.id}`}
@@ -102,7 +107,7 @@ export default function Incidents() {
             </tbody>
           </table>
           <div className="bg-surface-container-low/30 px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
-            <span class="text-xs text-on-surface-variant font-sans">Showing {incidents.length} active incidents</span>
+            <span className="text-xs text-on-surface-variant font-sans">Showing {incidents.length} active incidents</span>
             <div className="flex gap-2">
               <button className="p-1 hover:bg-surface-container-high transition-colors rounded-sm text-on-surface-variant cursor-pointer">
                 <span className="material-symbols-outlined text-sm pt-1">chevron_left</span>

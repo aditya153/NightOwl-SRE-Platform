@@ -1,53 +1,21 @@
-import { useState, useEffect } from 'react';
-
-// Mock data builder for demonstration
-const mockIncidentsDB = {
-  "INC-8821": {
-    id: "INC-8821",
-    title: "API Gateway OOMKilled",
-    severity: "CRITICAL",
-    status: "Investigating",
-    time: "2m ago",
-    root_cause: "us-east-1 | cluster-prod-01",
-    description: "The API Gateway deployment has restarted 8 times in the last 15 minutes due to memory limits (OOMKilled). Kubelet reports node pressure and constant eviction events. A recent deployment spike might have caused payload bloat.",
-    agentChats: [
-      { sender: 'Triage Bot', role: 'L7 Matcher', time: '10:41 AM', message: '> Alert received: High OOMKilled events on api-gateway-prod.\n> Severity classified as CRITICAL.\n> Handing off to Log Analyst.', icon: 'robot', class: 'text-tertiary bg-tertiary-container/20' },
-      { sender: 'Log Analyst', role: 'NLP Root Cause', time: '10:42 AM', message: '> Pulled last 500 lines from Kibana.\n> Found "JavaScript heap out of memory" exceptions.\n> Cause: Unbounded array allocation in the /v2/metrics endpoint.', icon: 'analytics', class: 'text-white' },
-      { sender: 'Correlator', role: 'Graph Logic', time: '10:42 AM', message: '> Associated with PR #1042 merged 1 hour ago.\n> Recommended Action: Immediate Git Revert or Temporary Memory Limit Increase.', icon: 'hub', class: 'text-error bg-error-container/20' }
-    ],
-    infrastructure: [
-      { label: "Cluster", value: "us-east-1-prod" },
-      { label: "Namespace", value: "ingress" },
-      { label: "Pod", value: "api-gateway-7f5b9" },
-    ]
-  },
-  "INC-8819": {
-    id: "INC-8819",
-    title: "Database CPU Spike",
-    severity: "HIGH",
-    status: "Correlating",
-    time: "15m ago",
-    root_cause: "postgres-xl-main | query-latency+200%",
-    description: "Postgres primary node CPU utilization has sustained over 95% for 15 minutes. Query latency increased by 200%, affecting all downstream services.",
-    agentChats: [
-      { sender: 'Triage Bot', role: 'L7 Matcher', time: '09:15 AM', message: '> Alert: RDS CPU > 95%.\n> Severity: HIGH.', icon: 'robot', class: 'text-tertiary bg-tertiary-container/20' }
-    ],
-    infrastructure: [
-      { label: "Database", value: "postgres-xl-main" },
-      { label: "Region", value: "eu-central-1" },
-    ]
-  }
-};
+import { useIncidentDetails } from '../hooks/useIncidents';
 
 export default function IncidentDetail({ incidentId }) {
-  const [data, setData] = useState(null);
+  const { data, isLoading, isError } = useIncidentDetails(incidentId);
 
-  useEffect(() => {
-    // Simulate fetching from actual database
-    setData(mockIncidentsDB[incidentId] || mockIncidentsDB["INC-8821"]);
-  }, [incidentId]);
+  if (isLoading || !data) return (
+    <div className="flex-1 overflow-y-auto p-12 text-white flex items-center justify-center font-mono">
+      <span className="material-symbols-outlined animate-spin mr-3">hourglass_empty</span>
+      Connecting to Agent Gateway...
+    </div>
+  );
 
-  if (!data) return <div className="p-12 text-white">Loading...</div>;
+  if (isError) return (
+    <div className="flex-1 overflow-y-auto p-12 text-error flex items-center justify-center font-mono">
+      <span className="material-symbols-outlined mr-3">error</span>
+      Data fetch failed for {incidentId}
+    </div>
+  );
 
   const getSeverityStyle = (severity) => {
     switch (severity) {
