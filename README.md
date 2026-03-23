@@ -84,6 +84,9 @@ Leveraged the external **Stitch MCP Server** to autonomously generate a "Big Tec
 ### 16. Incident Detail View & Agent Chat Stream
 Built the interactive deep-dive view (`IncidentDetail.jsx`) for analyzing individual anomalies. The right-hand panel features an autonomous **Agent Action Stream**—a chronological terminal emulator that renders the live thoughts, logic, and actions of the Triage Bot, Log Analyst, Correlator, and Fixer agents with matrix-style glowing syntax. The left panel isolates the specific infrastructure nodes and explicitly visualizes the root cause for human validation before finalizing the remediation payload.
 
+### 17. React Query & Live API Integration
+Fully integrated `@tanstack/react-query` to bridge the React frontend with the FastAPI backend. Removed all static UI mocks and implemented dynamic `useIncidentsList` and `useIncidentDetails` hooks. The Dashboard now actively queries the Python gateway's PostgreSQL database for live infrastructure event metrics, maintaining globally cached states with elegant loading/error fallbacks styled into the Obsidian Nocturnal theme.
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
