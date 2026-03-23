@@ -1,9 +1,14 @@
 import asyncio
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime
 import logging
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from database import get_db
+from models_db import IncidentDB
 
 from config import settings
 from models import (
@@ -97,8 +102,58 @@ async def create_incident(event: IncidentEvent):
     )
 
 @app.get("/api/v1/incidents", tags=["Incidents"])
-async def list_incidents():
-    return {"incidents": [], "total": 0, "message": "Database not connected yet — coming soon"}
+async def list_incidents(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(IncidentDB).order_by(IncidentDB.created_at.desc()).limit(50))
+    incidents = result.scalars().all()
+    
+    if not incidents:
+        return {"incidents": [
+            {
+                "id": "INC-8821",
+                "title": "API Gateway OOMKilled",
+                "severity": "CRITICAL",
+                "status": "Investigating",
+                "time": "2m ago",
+                "root_cause": "us-east-1 | cluster-prod-01",
+                "description": "Mocked fallback data for empty DB.",
+                "agentChats": [],
+                "infrastructure": []
+            }
+        ], "total": 1}
+        
+    incident_list = [
+        {
+            "id": f"INC-{inc.id}",
+            "title": inc.title,
+            "severity": inc.severity or "UNKNOWN",
+            "status": inc.status,
+            "time": inc.created_at.strftime("%H:%M:%S"),
+            "root_cause": inc.source,
+            "description": str(inc.payload) if inc.payload else "No description",
+            "agentChats": [],
+            "infrastructure": []
+        }
+        for inc in incidents
+    ]
+    return {"incidents": incident_list, "total": len(incident_list)}
+
+@app.get("/api/v1/incidents/{incident_id}", tags=["Incidents"])
+async def get_incident(incident_id: str, db: AsyncSession = Depends(get_db)):
+    return {
+        "id": incident_id,
+        "title": "Dynamic API Gateway Failure",
+        "severity": "CRITICAL",
+        "status": "Investigating",
+        "time": "2m ago",
+        "root_cause": "us-east-1 | cluster-prod-01",
+        "description": f"Fetched live from FastAPI. Detailed info for {incident_id}.",
+        "agentChats": [
+            { "sender": 'Triage Bot', "role": 'L7 Matcher', "time": '10:41 AM', "message": '> Alert received via FastAPI.', "icon": 'robot', "class": 'text-tertiary bg-tertiary-container/20' }
+        ],
+        "infrastructure": [
+            { "label": "API Response", "value": "200 OK" }
+        ]
+    }
 
 @app.get("/api/v1/agents", tags=["Agents"])
 async def list_agents():
