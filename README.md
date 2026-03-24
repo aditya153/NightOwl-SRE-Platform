@@ -87,6 +87,9 @@ Built the interactive deep-dive view (`IncidentDetail.jsx`) for analyzing indivi
 ### 17. React Query & Live API Integration
 Fully integrated `@tanstack/react-query` to bridge the React frontend with the FastAPI backend. Removed all static UI mocks and implemented dynamic `useIncidentsList` and `useIncidentDetails` hooks. The Dashboard now actively queries the Python gateway's PostgreSQL database for live infrastructure event metrics, maintaining globally cached states with elegant loading/error fallbacks styled into the Obsidian Nocturnal theme.
 
+### 18. Real-time Connectivity (Socket.io)
+Implemented a high-performance websocket stream using Socket.io between the Node.js Event Dispatcher and the React Dashboard. The frontend now features a "Live Stream Active" pulse indicator. When new incidents arrive via webhooks, the Event Dispatcher emits an event that instantly triggers a background refetch in the Dashboard via React Query, ensuring zero-latency visibility into infrastructure anomalies without manual page refreshes.
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
