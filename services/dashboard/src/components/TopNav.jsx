@@ -1,11 +1,10 @@
 export default function TopNav() {
   return (
-    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-[#131313]/90 backdrop-blur-xl flex items-center justify-between px-8 z-40 border-b border-surface-container-high">
+    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-[#131313]/90 backdrop-blur-xl flex items-center justify-between px-8 z-40 border-b border-outline-variant/10">
       <div className="flex items-center gap-4">
-        <span className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">System Status</span>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-primary neon-glow-primary"></span>
-          <span className="text-sm font-medium text-white font-sans">All Engines Nominal</span>
+        <div className="flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-full border border-primary/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse neon-glow-primary"></span>
+          <span className="text-[9px] font-black text-primary uppercase tracking-[0.2em] font-sans">Live Stream Active</span>
         </div>
       </div>
       <div className="flex items-center gap-6">

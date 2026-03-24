@@ -13,9 +13,10 @@ export const useSocket = () => {
     });
 
     socket.on('new-incident', (data) => {
-      console.log('Real-time alert received:', data);
+      console.log('Real-time alert received from Event Dispatcher:', data);
       
-      // Force React Query to refetch the master list
+      // Task 3: Trigger real-time dashboard update by invalidating the React Query cache
+      console.log('Synchronizing Dashboard state with Agent Gateway...');
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     });
 
