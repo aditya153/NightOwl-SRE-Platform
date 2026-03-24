@@ -1,8 +1,17 @@
 const express = require("express");
 const morgan = require("morgan");
+const http = require("http");
+const { Server } = require("socket.io");
 require("dotenv").config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 const port = process.env.PORT || 3000;
 const { connectProducer, publishEvent } = require('./kafka');
 
@@ -29,6 +38,12 @@ app.post("/webhooks/grafana", async (req, res) => {
         payload: { title, state, message, ruleUrl }
     });
 
+    io.emit('new-incident', {
+        source: 'grafana',
+        title,
+        severity: state === 'alerting' ? 'CRITICAL' : 'WARNING'
+    });
+
     res.status(200).json({ status: "received" });
 });
 
@@ -49,9 +64,19 @@ app.post("/webhooks/github", async (req, res) => {
         payload: { event, action, repository: repoName }
     });
 
+    io.emit('new-incident', {
+        source: 'github',
+        title: `${event}: ${action}`,
+        severity: 'MEDIUM'
+    });
+
     res.status(200).json({ status: "received" });
 });
 
-app.listen(port, () => {
+io.on('connection', (socket) => {
+    console.log('Dashboard connected to real-time stream', socket.id);
+});
+
+server.listen(port, () => {
     console.log(`Event Dispatcher running on port ${port}`);
 });
