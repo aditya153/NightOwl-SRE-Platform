@@ -4,9 +4,11 @@ import AgentSidebar from './components/AgentSidebar'
 import Incidents from './pages/Incidents'
 import IncidentDetail from './pages/IncidentDetail'
 import { useState } from 'react'
+import { useSocket } from './hooks/useSocket'
 
 function App() {
   const [isAgentSidebarOpen, setIsAgentSidebarOpen] = useState(true)
+  useSocket()
 
   // Simple routing for testing
   const path = window.location.pathname
