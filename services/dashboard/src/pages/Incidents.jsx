@@ -28,13 +28,13 @@ export default function Incidents() {
   };
 
   return (
-    <section className="flex-1 overflow-y-auto p-8 border-r border-outline-variant/10 relative h-full fade-in">
+    <section className="flex-1 overflow-y-auto p-4 md:p-8 border-r border-outline-variant/10 relative h-full fade-in">
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2 font-headline">Active Engineering Incidents</h2>
         <p className="text-on-surface-variant text-sm font-sans mb-10">Real-time oversight of system anomalies and remediation efforts.</p>
         
         {/* Dashboard Bento Stats */}
-        <div className="grid grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
           <div className="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group hover-lift hover-glow border border-transparent slide-up stagger-1">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <span className="material-symbols-outlined text-6xl">priority_high</span>
@@ -60,6 +60,7 @@ export default function Incidents() {
 
         {/* Incidents Table */}
         <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-2xl border border-outline-variant/5 hover-glow scale-in stagger-4">
+          <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low/50">
@@ -106,6 +107,7 @@ export default function Incidents() {
               ))}
             </tbody>
           </table>
+          </div>
           <div className="bg-surface-container-low/30 px-6 py-4 border-t border-outline-variant/10 flex items-center justify-between">
             <span className="text-xs text-on-surface-variant font-sans">Showing {incidents.length} active incidents</span>
             <div className="flex gap-2">

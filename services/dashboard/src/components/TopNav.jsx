@@ -1,6 +1,6 @@
 export default function TopNav() {
   return (
-    <header className="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-[#131313]/90 backdrop-blur-xl flex items-center justify-between px-8 z-40 border-b border-outline-variant/10 fade-in">
+    <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 bg-[#131313]/90 backdrop-blur-xl flex items-center justify-between px-4 md:px-8 z-40 border-b border-outline-variant/10 fade-in">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 px-3 py-1 bg-primary/5 rounded-full border border-primary/20">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse neon-glow-primary"></span>

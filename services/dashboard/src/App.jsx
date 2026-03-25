@@ -35,7 +35,7 @@ function App() {
       <TopNav />
       
       {/* Main content push right by 256px and down by 64px */}
-      <main className="ml-64 pt-16 flex-1 flex h-screen relative">
+      <main className="ml-0 md:ml-64 pt-16 flex-1 flex flex-col md:flex-row h-screen relative">
          <Page />
          
          <AgentSidebar isOpen={isAgentSidebarOpen} setIsOpen={setIsAgentSidebarOpen} />

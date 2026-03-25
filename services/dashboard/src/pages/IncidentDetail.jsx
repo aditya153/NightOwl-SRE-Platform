@@ -50,7 +50,7 @@ export default function IncidentDetail({ incidentId }) {
             </div>
           </div>
         </div>
-        
+
         {/* Actions Menu */}
         <div className="flex gap-3">
           <button className="px-4 py-2 border border-outline-variant/20 hover:bg-surface-container-high rounded-md text-sm font-bold text-white transition-all cursor-pointer hover-lift">
@@ -64,7 +64,7 @@ export default function IncidentDetail({ incidentId }) {
       </div>
 
       <div className="grid grid-cols-12 gap-8">
-        
+
         {/* Left Column: Context & Metadata */}
         <div className="col-span-12 xl:col-span-4 space-y-6">
           <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-lg hover-glow slide-up stagger-1">
@@ -72,7 +72,7 @@ export default function IncidentDetail({ incidentId }) {
             <p className="text-sm text-on-surface-variant leading-relaxed font-sans mb-6">
               {data.description}
             </p>
-            
+
             <div className="space-y-3">
               <h4 className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant pt-2 border-t border-outline-variant/5">Infrastructure Nodes</h4>
               {data.infrastructure.map((item, idx) => (
@@ -85,7 +85,7 @@ export default function IncidentDetail({ incidentId }) {
           </div>
 
           <div className="bg-[#1C1B1B] p-6 rounded-xl border border-outline-variant/10 relative overflow-hidden group hover-glow slide-up stagger-2">
-             <div className="absolute top-0 right-0 p-4 opacity-5">
+            <div className="absolute top-0 right-0 p-4 opacity-5">
               <span className="material-symbols-outlined text-8xl">troubleshoot</span>
             </div>
             <h3 className="font-label text-[10px] uppercase tracking-widest text-error mb-1">Root Cause Area</h3>
@@ -102,37 +102,37 @@ export default function IncidentDetail({ incidentId }) {
                 Autonomous Action Stream
               </h3>
               <div className="flex items-center gap-2">
-                 <span className="flex h-2 w-2 relative">
+                <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
                 </span>
                 <span className="text-[10px] text-tertiary uppercase tracking-widest font-bold font-label">Engaged</span>
               </div>
             </div>
-            
+
             <div className="flex-1 p-6 space-y-6 overflow-y-auto font-mono text-sm">
               {data.agentChats.map((chat, idx) => (
-                 <div key={idx} className="flex gap-4">
-                   <div className={`w-8 h-8 shrink-0 rounded flex items-center justify-center ${chat.class.includes('bg-') ? chat.class : 'bg-surface-container-highest text-white'}`}>
-                     <span className="material-symbols-outlined text-sm" style={{fontVariationSettings: "'FILL' 1"}}>{chat.icon}</span>
-                   </div>
-                   <div className="flex-1">
-                     <div className="flex items-center gap-2 mb-1">
-                       <span className="font-bold text-white text-xs">{chat.sender}</span>
-                       <span className="text-[10px] text-on-surface-variant border border-outline-variant/20 px-1 rounded">{chat.role}</span>
-                       <span className="text-[10px] text-on-surface-variant/50 ml-auto">{chat.time}</span>
-                     </div>
-                     <div className="bg-surface-container-low/50 border border-outline-variant/5 p-4 rounded-md text-[#00FF41] text-xs leading-relaxed whitespace-pre-wrap">
-                       {chat.message}
-                     </div>
-                   </div>
-                 </div>
+                <div key={idx} className="flex gap-4">
+                  <div className={`w-8 h-8 shrink-0 rounded flex items-center justify-center ${chat.class.includes('bg-') ? chat.class : 'bg-surface-container-highest text-white'}`}>
+                    <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>{chat.icon}</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-white text-xs">{chat.sender}</span>
+                      <span className="text-[10px] text-on-surface-variant border border-outline-variant/20 px-1 rounded">{chat.role}</span>
+                      <span className="text-[10px] text-on-surface-variant/50 ml-auto">{chat.time}</span>
+                    </div>
+                    <div className="bg-surface-container-low/50 border border-outline-variant/5 p-4 rounded-md text-[#00FF41] text-xs leading-relaxed whitespace-pre-wrap">
+                      {chat.message}
+                    </div>
+                  </div>
+                </div>
               ))}
-              
+
               {/* Fake typing indicator for realtime feel */}
               <div className="flex gap-4 opacity-50 animate-pulse">
                 <div className="w-8 h-8 shrink-0 rounded flex items-center justify-center bg-primary-container/20 text-primary">
-                  <span className="material-symbols-outlined text-sm" style={{fontVariationSettings: "'FILL' 1"}}>build</span>
+                  <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>build</span>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
