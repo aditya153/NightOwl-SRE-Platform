@@ -2,7 +2,7 @@ export default function Sidebar() {
   const location = window.location.pathname;
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-[#0E0E0E] flex flex-col py-8 px-4 gap-y-6 shadow-[40px_0_40px_rgba(0,0,0,0.4)] z-50">
+    <aside className="fixed left-0 top-0 h-full w-64 bg-[#0E0E0E] flex flex-col py-8 px-4 gap-y-6 shadow-[40px_0_40px_rgba(0,0,0,0.4)] z-50 slide-in-left">
       <div className="flex items-center gap-3 px-4 mb-4">
         <div className="w-8 h-8 bg-white flex items-center justify-center rounded-sm">
           <span className="material-symbols-outlined text-black text-xl" style={{fontVariationSettings: "'FILL' 1"}}>visibility</span>
@@ -14,23 +14,23 @@ export default function Sidebar() {
       </div>
       
       <nav className="flex flex-col gap-y-1">
-        <a href="/" className={`rounded-md px-4 py-2 font-bold flex items-center gap-3 transition-all duration-100 ${location === '/' ? 'text-white bg-[#2A2A2A]' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B]'}`}>
+        <a href="/" className={`rounded-md px-4 py-2 font-bold flex items-center gap-3 transition-all duration-100 hover-scale ${location === '/' ? 'text-white bg-[#2A2A2A]' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B]'}`}>
           <span className="material-symbols-outlined text-sm">dashboard</span>
           <span className="font-sans font-medium text-sm tracking-tight">Dashboard</span>
         </a>
-        <a href="/incidents" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 ${location === '/incidents' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
+        <a href="/incidents" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 hover-scale ${location === '/incidents' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
           <span className="material-symbols-outlined text-sm">warning</span>
           <span className="font-sans text-sm tracking-tight">Incidents</span>
         </a>
-        <a href="/agents" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 ${location === '/agents' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
+        <a href="/agents" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 hover-scale ${location === '/agents' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
           <span className="material-symbols-outlined text-sm">smart_toy</span>
           <span className="font-sans text-sm tracking-tight">Agents</span>
         </a>
-        <a href="/logs" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 ${location === '/logs' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
+        <a href="/logs" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 hover-scale ${location === '/logs' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
           <span className="material-symbols-outlined text-sm">terminal</span>
           <span className="font-sans text-sm tracking-tight">Logs</span>
         </a>
-        <a href="/settings" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 ${location === '/settings' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
+        <a href="/settings" className={`rounded-md px-4 py-2 flex items-center gap-3 transition-all duration-100 hover-scale ${location === '/settings' ? 'text-white bg-[#2A2A2A] font-bold' : 'text-[#C6C6C6] hover:text-white hover:bg-[#1C1B1B] font-medium'}`}>
           <span className="material-symbols-outlined text-sm">settings</span>
           <span className="font-sans text-sm tracking-tight">Settings</span>
         </a>

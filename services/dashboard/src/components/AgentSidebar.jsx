@@ -55,7 +55,7 @@ export default function AgentSidebar({ isOpen, setIsOpen }) {
   }
 
   return (
-    <aside className="w-80 shrink-0 bg-surface-container-lowest flex flex-col p-6 gap-y-8 overflow-y-auto border-l border-outline-variant/10 relative transition-all duration-300 z-30">
+    <aside className="w-80 shrink-0 bg-surface-container-lowest flex flex-col p-6 gap-y-8 overflow-y-auto border-l border-outline-variant/10 relative transition-all duration-300 z-30 slide-in-right">
       <button 
         onClick={() => setIsOpen(false)}
         className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors"
@@ -73,7 +73,7 @@ export default function AgentSidebar({ isOpen, setIsOpen }) {
 
       <div className="space-y-6 flex-1">
         {mockAgents.map((agent, i) => (
-          <div key={i} className="bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/5">
+          <div key={i} className="bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/5 hover-lift hover-glow slide-up">
             <div className="flex items-center gap-3 mb-3">
               <div className={`w-8 h-8 rounded-md flex items-center justify-center ${agent.colorClass}`}>
                 <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>{agent.icon}</span>

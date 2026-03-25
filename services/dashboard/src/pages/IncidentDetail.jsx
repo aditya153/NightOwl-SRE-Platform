@@ -27,7 +27,7 @@ export default function IncidentDetail({ incidentId }) {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-10 h-full">
+    <div className="flex-1 overflow-y-auto p-10 h-full fade-in">
       {/* Top Header Navigation */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -53,10 +53,10 @@ export default function IncidentDetail({ incidentId }) {
         
         {/* Actions Menu */}
         <div className="flex gap-3">
-          <button className="px-4 py-2 border border-outline-variant/20 hover:bg-surface-container-high rounded-md text-sm font-bold text-white transition-colors cursor-pointer">
+          <button className="px-4 py-2 border border-outline-variant/20 hover:bg-surface-container-high rounded-md text-sm font-bold text-white transition-all cursor-pointer hover-lift">
             ACKNOWLEDGE
           </button>
-          <button className="px-4 py-2 bg-primary text-black hover:bg-primary/90 rounded-md text-sm font-bold transition-colors cursor-pointer flex items-center gap-2">
+          <button className="px-4 py-2 bg-primary text-black hover:bg-primary/90 rounded-md text-sm font-bold transition-all cursor-pointer flex items-center gap-2 hover-lift">
             <span className="material-symbols-outlined text-sm font-bold">build</span>
             AUTHORIZE FIX
           </button>
@@ -67,7 +67,7 @@ export default function IncidentDetail({ incidentId }) {
         
         {/* Left Column: Context & Metadata */}
         <div className="col-span-12 xl:col-span-4 space-y-6">
-          <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-lg">
+          <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-lg hover-glow slide-up stagger-1">
             <h3 className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Incident Context</h3>
             <p className="text-sm text-on-surface-variant leading-relaxed font-sans mb-6">
               {data.description}
@@ -84,7 +84,7 @@ export default function IncidentDetail({ incidentId }) {
             </div>
           </div>
 
-          <div className="bg-[#1C1B1B] p-6 rounded-xl border border-outline-variant/10 relative overflow-hidden group">
+          <div className="bg-[#1C1B1B] p-6 rounded-xl border border-outline-variant/10 relative overflow-hidden group hover-glow slide-up stagger-2">
              <div className="absolute top-0 right-0 p-4 opacity-5">
               <span className="material-symbols-outlined text-8xl">troubleshoot</span>
             </div>
@@ -95,7 +95,7 @@ export default function IncidentDetail({ incidentId }) {
 
         {/* Right Column: AI Agent Action Stream */}
         <div className="col-span-12 xl:col-span-8">
-          <div className="bg-surface-container-lowest h-full min-h-[500px] rounded-xl border border-outline-variant/10 shadow-lg flex flex-col">
+          <div className="bg-surface-container-lowest h-full min-h-[500px] rounded-xl border border-outline-variant/10 shadow-lg flex flex-col hover-glow scale-in">
             <div className="p-4 border-b border-outline-variant/10 bg-surface-container-low/30 flex items-center justify-between">
               <h3 className="font-label text-xs uppercase tracking-[0.2em] text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm text-tertiary">memory</span>
