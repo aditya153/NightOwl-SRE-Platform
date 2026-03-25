@@ -14,16 +14,16 @@ export default function TopNav() {
       <div className="flex items-center gap-6">
         <div className="relative group flex items-center">
           <span className="absolute left-3 material-symbols-outlined text-on-surface-variant text-sm">search</span>
-          <input className="bg-surface-container-highest text-sm rounded-md border-none focus:outline-none focus:ring-1 focus:ring-tertiary/20 pl-10 pr-4 py-1.5 w-64 transition-all text-white placeholder-on-surface-variant/50 font-sans" placeholder="Search incidents, logs..." type="text"/>
+          <input className="bg-surface-container-highest text-sm rounded-md border-none focus:outline-none focus:ring-1 focus:ring-tertiary/20 pl-10 pr-4 py-1.5 w-64 transition-all text-on-surface placeholder-on-surface-variant/50 font-sans" placeholder="Search incidents, logs..." type="text"/>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={toggleTheme} className="text-[#C6C6C6] hover:text-white transition-colors hover-scale" title="Toggle Theme">
+          <button onClick={toggleTheme} className="text-[#C6C6C6] hover:text-on-surface transition-colors hover-scale" title="Toggle Theme">
             <span className="material-symbols-outlined">{isDark ? 'light_mode' : 'dark_mode'}</span>
           </button>
-          <button className="text-[#C6C6C6] hover:text-white transition-colors hover-scale">
+          <button className="text-[#C6C6C6] hover:text-on-surface transition-colors hover-scale">
             <span className="material-symbols-outlined">notifications</span>
           </button>
-          <button className="text-[#C6C6C6] hover:text-white transition-colors hover-scale">
+          <button className="text-[#C6C6C6] hover:text-on-surface transition-colors hover-scale">
             <span className="material-symbols-outlined">help_outline</span>
           </button>
           <button className="bg-primary text-on-primary font-bold text-xs px-4 py-2 rounded-md hover:opacity-90 transition-all font-sans cursor-pointer hover-lift">

@@ -30,7 +30,7 @@ export default function Incidents() {
   return (
     <section className="flex-1 overflow-y-auto p-4 md:p-8 border-r border-outline-variant/10 relative h-full fade-in">
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2 font-headline">Active Engineering Incidents</h2>
+        <h2 className="text-3xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">Active Engineering Incidents</h2>
         <p className="text-on-surface-variant text-sm font-sans mb-10">Real-time oversight of system anomalies and remediation efforts.</p>
         
         {/* Dashboard Bento Stats */}
@@ -47,7 +47,7 @@ export default function Incidents() {
               <span className="material-symbols-outlined text-6xl">query_stats</span>
             </div>
             <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Mean Time to Resolve</p>
-            <p className="text-4xl font-black text-white font-sans">14<span className="text-lg font-normal ml-1 text-on-surface-variant">min</span></p>
+            <p className="text-4xl font-black text-on-surface font-sans">14<span className="text-lg font-normal ml-1 text-on-surface-variant">min</span></p>
           </div>
           <div className="bg-surface-container-low p-6 rounded-lg relative overflow-hidden group hover-lift hover-glow border border-transparent slide-up stagger-3">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -87,7 +87,7 @@ export default function Incidents() {
                   <td className="px-6 py-5 font-mono text-xs text-on-surface-variant">{incident.id}</td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col">
-                      <span className="text-white font-bold group-hover:text-tertiary transition-colors font-sans">{incident.title}</span>
+                      <span className="text-on-surface font-bold group-hover:text-tertiary transition-colors font-sans">{incident.title}</span>
                       <span className="text-[10px] text-on-surface-variant/60 font-mono mt-0.5">{incident.root_cause}</span>
                     </div>
                   </td>
@@ -99,7 +99,7 @@ export default function Incidents() {
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-2">
                       {getStatusDot(incident.status, incident.severity)}
-                      <span className="text-xs text-white font-sans">{incident.status}</span>
+                      <span className="text-xs text-on-surface font-sans">{incident.status}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">{incident.time}</td>

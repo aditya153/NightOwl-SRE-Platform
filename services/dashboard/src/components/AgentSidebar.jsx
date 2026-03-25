@@ -19,7 +19,7 @@ const mockAgents = [
     role: 'NLP Root Cause', 
     status: 'ACTIVE', 
     icon: 'analytics',
-    colorClass: 'text-white bg-surface-container-highest',
+    colorClass: 'text-on-surface bg-surface-container-highest',
     thoughts: [
       '> Identifying memory leak patterns...',
       '> Heap size growth: +4.2GB/min',
@@ -58,13 +58,13 @@ export default function AgentSidebar({ isOpen, setIsOpen }) {
     <aside className="hidden lg:flex w-80 shrink-0 bg-surface-container-lowest flex-col p-6 gap-y-8 overflow-y-auto border-l border-outline-variant/10 relative transition-all duration-300 z-30 slide-in-right">
       <button 
         onClick={() => setIsOpen(false)}
-        className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors"
+        className="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors"
       >
         <span className="material-symbols-outlined text-sm">last_page</span>
       </button>
 
       <div className="flex items-center justify-between mt-2">
-        <h3 className="font-label text-xs uppercase tracking-[0.2em] text-white">Live Agents</h3>
+        <h3 className="font-label text-xs uppercase tracking-[0.2em] text-on-surface">Live Agents</h3>
         <span className="flex items-center gap-1.5 bg-tertiary-container/10 text-tertiary px-2 py-0.5 rounded-full text-[10px] font-bold">
           <span className="w-1 h-1 bg-tertiary rounded-full animate-ping"></span>
           ACTIVE
@@ -79,7 +79,7 @@ export default function AgentSidebar({ isOpen, setIsOpen }) {
                 <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>{agent.icon}</span>
               </div>
               <div>
-                <p className="text-xs font-bold text-white font-sans">{agent.name}</p>
+                <p className="text-xs font-bold text-on-surface font-sans">{agent.name}</p>
                 <p className="text-[10px] text-on-surface-variant tracking-wide font-sans">{agent.role}</p>
               </div>
               <div className={`ml-auto w-2 h-2 rounded-full ${agent.statusColor}`}></div>
