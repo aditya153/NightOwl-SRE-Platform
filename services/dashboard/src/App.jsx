@@ -1,45 +1,42 @@
+import { useState } from 'react'
+import { useSocket } from './hooks/useSocket'
+import { useTheme } from './context/ThemeContext'
 import Sidebar from './components/Sidebar'
 import TopNav from './components/TopNav'
 import AgentSidebar from './components/AgentSidebar'
 import Incidents from './pages/Incidents'
 import IncidentDetail from './pages/IncidentDetail'
-import { useState } from 'react'
-import { useSocket } from './hooks/useSocket'
 
 function App() {
   const [isAgentSidebarOpen, setIsAgentSidebarOpen] = useState(true)
+  const { isDark } = useTheme()
   useSocket()
 
-  // Simple routing for testing
   const path = window.location.pathname
   let Page = Incidents
   if (path === '/agents') {
-    Page = () => <div className="p-12 flex-1 w-full"><h1 className="text-2xl font-bold font-headline text-white">AI Agents Panel</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">AI Agents Panel</h1></div>
   } else if (path === '/logs') {
-    Page = () => <div className="p-12 flex-1 w-full"><h1 className="text-2xl font-bold font-headline text-white">System Logs</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">System Logs</h1></div>
   } else if (path === '/settings') {
-    Page = () => <div className="p-12 flex-1 w-full"><h1 className="text-2xl font-bold font-headline text-white">Settings</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">Settings</h1></div>
   } else if (path.startsWith('/incident/')) {
-    const incidentId = path.split('/')[2];
+    const incidentId = path.split('/')[2]
     Page = () => <IncidentDetail incidentId={incidentId} />
-  } else if (path === '/') {
-    Page = Incidents
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface font-sans selection:bg-primary selection:text-on-primary">
-      {/* 256px Left Sidebar */}
+    <div className="h-screen flex overflow-hidden bg-surface">
       <Sidebar />
-      
-      {/* 64px Top Header that lives beside Left Sidebar */}
-      <TopNav />
-      
-      {/* Main content push right by 256px and down by 64px */}
-      <main className="ml-0 md:ml-64 pt-16 flex-1 flex flex-col md:flex-row h-screen relative">
-         <Page />
-         
-         <AgentSidebar isOpen={isAgentSidebarOpen} setIsOpen={setIsAgentSidebarOpen} />
-      </main>
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopNav isAgentSidebarOpen={isAgentSidebarOpen} setIsAgentSidebarOpen={setIsAgentSidebarOpen} />
+        <div className="flex-1 flex overflow-hidden">
+          <main className="flex-1 overflow-y-auto">
+            <Page />
+          </main>
+          {isAgentSidebarOpen && <AgentSidebar setIsOpen={setIsAgentSidebarOpen} />}
+        </div>
+      </div>
     </div>
   )
 }
