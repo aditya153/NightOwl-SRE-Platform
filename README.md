@@ -90,6 +90,9 @@ Fully integrated `@tanstack/react-query` to bridge the React frontend with the F
 ### 18. Real-time Connectivity (Socket.io)
 Implemented a high-performance websocket stream using Socket.io between the Node.js Event Dispatcher and the React Dashboard. The frontend now features a "Live Stream Active" pulse indicator. When new incidents arrive via webhooks, the Event Dispatcher emits an event that instantly triggers a background refetch in the Dashboard via React Query, ensuring zero-latency visibility into infrastructure anomalies without manual page refreshes.
 
+### 19. UI Polish, Responsive Design & Dark/Light Mode
+Finalized the Obsidian Nocturnal design system with comprehensive micro-animations (staggered fade-ins, hover-lift, hover-glow, scale-in), full responsive support (Mobile, Tablet, Desktop) with collapsible sidebar and adaptive grids, and a dark/light mode toggle powered by a custom `ThemeContext` with `localStorage` persistence and 30+ CSS design token remappings.
+
 ## Development Progress
 
 - [x] Phase 1: Architecture & Documentation
