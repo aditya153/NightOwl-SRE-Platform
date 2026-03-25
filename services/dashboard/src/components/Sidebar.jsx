@@ -1,8 +1,11 @@
+import { useTheme } from '../context/ThemeContext';
+
 export default function Sidebar() {
   const location = window.location.pathname;
+  const { isDark } = useTheme();
 
   return (
-    <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-[#0E0E0E] flex-col py-8 px-4 gap-y-6 shadow-[40px_0_40px_rgba(0,0,0,0.4)] z-50 slide-in-left">
+    <aside className={`hidden md:flex fixed left-0 top-0 h-full w-64 flex-col py-8 px-4 gap-y-6 z-50 slide-in-left ${isDark ? 'bg-[#0E0E0E] shadow-[40px_0_40px_rgba(0,0,0,0.4)]' : 'bg-white shadow-[4px_0_20px_rgba(0,0,0,0.08)] border-r border-outline-variant/20'}`}>
       <div className="flex items-center gap-3 px-4 mb-4">
         <div className="w-8 h-8 bg-white flex items-center justify-center rounded-sm">
           <span className="material-symbols-outlined text-black text-xl" style={{fontVariationSettings: "'FILL' 1"}}>visibility</span>
