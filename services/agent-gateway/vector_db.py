@@ -92,3 +92,31 @@ def find_similar_past_incidents(query_text: str, limit: int = 3):
     except Exception as e:
         logger.error(f"[MEMORY] Similarity search failed: {e}")
         return []
+
+def search_runbooks(query_text: str, limit: int = 1):
+    """
+    Searches Qdrant 'runbooks' collection for playbooks matching the incoming alert.
+    """
+    try:
+        query_vector = embeddings.embed_query(query_text)
+        
+        search_result = qdrant_client.search(
+            collection_name="runbooks",
+            query_vector=query_vector,
+            limit=limit
+        )
+        
+        results = []
+        for hit in search_result:
+            results.append({
+                "score": hit.score,
+                "title": hit.payload.get("title"),
+                "root_cause_analysis": hit.payload.get("root_cause_analysis"),
+                "resolution_steps": hit.payload.get("resolution_steps"),
+                "source_file": hit.payload.get("source_file")
+            })
+            
+        return results
+    except Exception as e:
+        logger.error(f"[MEMORY] Runbook similarity search failed: {e}")
+        return []
