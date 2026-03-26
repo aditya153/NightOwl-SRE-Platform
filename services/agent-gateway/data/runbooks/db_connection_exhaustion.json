@@ -1,0 +1,16 @@
+{
+  "title": "Database Connection Pool Exhaustion",
+  "tags": ["postgresql", "database", "connections"],
+  "symptoms": [
+    "Application logs show 'FATAL: sorry, too many clients already'",
+    "Database latency spikes significantly",
+    "API requests timeout while waiting for a DB connection"
+  ],
+  "root_cause_analysis": "The application is leaking connections or an unexpected spike in traffic has consumed all available connections in the PostgreSQL connection pool (pgbouncer or native).",
+  "resolution_steps": [
+    "1. Identify the service holding the most active connections using pg_stat_activity.",
+    "2. Restart the offending service pods to forcefully drop idle/leaked connections.",
+    "3. Check for recently deployed inefficient queries or missing indexes causing long-running transactions.",
+    "4. If this is a legitimate traffic spike, temporarily increase max_connections (if safe) or scale up the connection pooler."
+  ]
+}

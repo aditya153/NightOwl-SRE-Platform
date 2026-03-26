@@ -1,0 +1,17 @@
+{
+  "title": "API Gateway OOMKilled",
+  "tags": ["kubernetes", "api-gateway", "memory"],
+  "symptoms": [
+    "Pod restarts with reason OOMKilled",
+    "High memory utilization leading up to crash",
+    "Increased 502/504 errors on API Gateway routes"
+  ],
+  "root_cause_analysis": "The API Gateway pod is exceeding a configured memory limit due to a memory leak in a recent route deployment or a sudden spike in high-payload concurrent requests.",
+  "resolution_steps": [
+    "1. View pod describe logs to confirm OOMKilled status.",
+    "2. Check grafana memory metrics for the api-gateway deployment.",
+    "3. Scale up the deployment replicas to distribute load immediately.",
+    "4. Rollback to the previous stable image if a recent deployment caused the leak.",
+    "5. If a rollback is not possible, temporarily increase the memory limits in the deployment manifest."
+  ]
+}

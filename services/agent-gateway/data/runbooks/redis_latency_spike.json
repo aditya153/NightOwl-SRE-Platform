@@ -1,0 +1,16 @@
+{
+  "title": "Redis Latency Spike",
+  "tags": ["redis", "cache", "latency"],
+  "symptoms": [
+    "Cache read/write times exceed 50ms",
+    "Application APIs experience degraded performance due to cache misses or timeouts",
+    "Redis CPU usage spikes near 100%"
+  ],
+  "root_cause_analysis": "Redis is blocking on an expensive command (e.g., KEYS or massive SMEMBERS), memory fragmentation is high, or network saturation between the app and Redis cluster.",
+  "resolution_steps": [
+    "1. Run 'SLOWLOG GET' to identify expensive or blocking commands.",
+    "2. If an expensive command is found, identify the offending service and disable the feature or patch the command.",
+    "3. Check 'INFO memory' for fragmentation ratio. If high, schedule a restart during off-peak.",
+    "4. Scale read-replicas if this is purely a read-heavy traffic spike."
+  ]
+}
