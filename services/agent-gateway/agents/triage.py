@@ -23,10 +23,24 @@ triage_agent = Agent(
 )
 
 def run_triage(alert_text: str) -> dict:
+    historical_context = "No specific historical runbooks found."
+    playbooks = search_runbooks(alert_text, limit=1)
+    
+    if playbooks:
+        best_match = playbooks[0]
+        if best_match["score"] > 0.2:  
+            historical_context = (
+                f"Title: {best_match['title']}\n"
+                f"Root Cause: {best_match['root_cause_analysis']}\n"
+                f"Resolution Steps: {best_match['resolution_steps']}"
+            )
+
     triage_task = Task(
         description=(
             f"Analyze the following alert and provide a triage assessment:\n\n"
             f"ALERT: {alert_text}\n\n"
+            f"HISTORICAL PLAYBOOK CONTEXT:\n{historical_context}\n\n"
+            f"Strictly use the historical context for your diagnosis if it is relevant.\n\n"
             f"You must respond with ONLY a valid JSON object (no markdown, no explanation, no extra text) "
             f"with exactly these fields:\n"
             f"- severity: one of CRITICAL, HIGH, MEDIUM, LOW, INFO\n"
