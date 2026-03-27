@@ -1,6 +1,12 @@
 import json
+import sys
+import os
 from crewai import Agent, Task, Crew, Process
 from .utils import llm, clean_json_response
+
+# Add parent directory to path to allow importing vector_db if run directly
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from vector_db import search_runbooks
 
 triage_agent = Agent(
     role="Senior SRE Triage Specialist",
