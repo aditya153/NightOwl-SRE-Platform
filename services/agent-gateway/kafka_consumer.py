@@ -8,6 +8,7 @@ from agents.triage import run_triage
 from agents.log_analyst import run_log_analysis
 from agents.correlator import run_correlation
 from agents.fixer import run_fixer
+from agents.compliance import run_compliance
 from database import AsyncSessionLocal
 from models_db import IncidentDB, AgentLogDB
 from vector_db import init_vector_db, add_incident_resolution_to_memory
@@ -115,6 +116,15 @@ async def consume_alerts():
                 fixer_result = await loop.run_in_executor(None, run_fixer, incident_context)
                 logger.info(f"[PIPELINE] Fixer Complete: {json.dumps(fixer_result, indent=2)}")
 
+                logger.info("[PIPELINE] Stage 5: Compliance Agent")
+                compliance_result = await loop.run_in_executor(None, run_compliance, fixer_result.get("action_plan", []), incident_context)
+                logger.info(f"[PIPELINE] Compliance Complete: {json.dumps(compliance_result, indent=2)}")
+
+                # If the compliance agent rejects the plan, force manual human approval
+                if not compliance_result.get("is_compliant", False):
+                    logger.warning(f"[PIPELINE] Compliance Violation Detected: {compliance_result.get('violations')}")
+                    fixer_result["requires_human_approval"] = True
+
                 async with AsyncSessionLocal() as session:
                     session.add(AgentLogDB(
                         incident_id=incident_id,
@@ -122,6 +132,14 @@ async def consume_alerts():
                         action=json.dumps(fixer_result.get("action_plan", [])),
                         reasoning=f"Risk: {fixer_result.get('risk_level', 'UNKNOWN')} | Human Approval: {fixer_result.get('requires_human_approval', True)}"
                     ))
+                    
+                    session.add(AgentLogDB(
+                        incident_id=incident_id,
+                        agent_name="Compliance Agent",
+                        action="APPROVED" if compliance_result.get("is_compliant", False) else "REJECTED",
+                        reasoning=compliance_result.get("reasoning", "No reasoning provided")
+                    ))
+                    
                     incident = await session.get(IncidentDB, incident_id)
                     if incident:
                         incident.status = "resolved" if not fixer_result.get("requires_human_approval") else "pending_approval"
