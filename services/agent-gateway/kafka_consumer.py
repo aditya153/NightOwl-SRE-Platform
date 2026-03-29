@@ -9,6 +9,7 @@ from agents.log_analyst import run_log_analysis
 from agents.correlator import run_correlation
 from agents.fixer import run_fixer
 from agents.compliance import run_compliance
+from utils_slack import send_approval_request
 from database import AsyncSessionLocal
 from models_db import IncidentDB, AgentLogDB
 from vector_db import init_vector_db, add_incident_resolution_to_memory
@@ -142,7 +143,12 @@ async def consume_alerts():
                     
                     incident = await session.get(IncidentDB, incident_id)
                     if incident:
-                        incident.status = "resolved" if not fixer_result.get("requires_human_approval") else "pending_approval"
+                        if fixer_result.get("requires_human_approval"):
+                            incident.status = "pending_approval"
+                            logger.info(f"[PIPELINE] Incident {incident_id} requires human approval. Notifying Slack.")
+                            await send_approval_request(incident_id, fixer_result.get("action_plan", []))
+                        else:
+                            incident.status = "resolved"
                     await session.commit()
 
                 await add_incident_resolution_to_memory(
