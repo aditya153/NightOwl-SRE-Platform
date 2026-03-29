@@ -1,5 +1,6 @@
 import asyncio
-from fastapi import FastAPI, HTTPException, status, Depends
+import json
+from fastapi import FastAPI, HTTPException, status, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -190,6 +191,41 @@ async def triage_alert(request: TriageRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Triage agent encountered an error: {str(e)}",
         )
+
+@app.post("/api/slack/interactions", tags=["Slack"])
+async def slack_interactions(request: Request, db: AsyncSession = Depends(get_db)):
+    form_data = await request.form()
+    payload_str = form_data.get("payload")
+    if not payload_str:
+        return {"status": "error", "message": "No payload"}
+        
+    try:
+        payload = json.loads(payload_str)
+        user = payload.get("user", {}).get("username", "Unknown")
+        actions = payload.get("actions", [])
+        if not actions:
+            return {"status": "ignored"}
+            
+        action = actions[0]
+        value_data = json.loads(action.get("value", "{}"))
+        incident_id = value_data.get("incident_id")
+        decision = value_data.get("action")
+        
+        if incident_id and decision:
+            incident = await db.get(IncidentDB, incident_id)
+            if incident:
+                if decision == "approve":
+                    incident.status = "resolved"
+                    logger.info(f"[Slack] Incident {incident_id} APPROVED by {user}")
+                else:
+                    incident.status = "rejected"
+                    logger.info(f"[Slack] Incident {incident_id} REJECTED by {user}")
+                await db.commit()
+                
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Error processing Slack interaction: {e}")
+        return {"status": "error"}
 
 def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
     agent_map = {
