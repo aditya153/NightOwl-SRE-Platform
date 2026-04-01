@@ -46,6 +46,7 @@ services:
       - kafka
     environment:
       - NODE_ENV=production
+      - PORT=4001
       - KAFKA_BROKER=kafka:9092
     ports:
       - "4001:4001"
