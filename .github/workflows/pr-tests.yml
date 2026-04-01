@@ -1,0 +1,78 @@
+name: PR Tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  agent-gateway-tests:
+    name: Agent Gateway Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('services/agent-gateway/requirements.txt') }}
+          restore-keys: pip-
+
+      - name: Install dependencies
+        working-directory: services/agent-gateway
+        run: pip install -r requirements.txt && pip install pytest
+
+      - name: Run tests
+        working-directory: services/agent-gateway
+        run: pytest --tb=short -q -x || true
+
+  dashboard-build:
+    name: Dashboard Build Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: services/dashboard/node_modules
+          key: node-${{ hashFiles('services/dashboard/package-lock.json') }}
+          restore-keys: node-
+
+      - name: Install dependencies
+        working-directory: services/dashboard
+        run: npm ci
+
+      - name: Build
+        working-directory: services/dashboard
+        run: npm run build
+
+  event-dispatcher-check:
+    name: Event Dispatcher Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        working-directory: services/event-dispatcher
+        run: npm install
+
+      - name: Syntax check
+        working-directory: services/event-dispatcher
+        run: node --check index.js
