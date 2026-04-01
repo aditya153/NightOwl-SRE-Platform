@@ -10,6 +10,9 @@ jobs:
   auto-fix:
     name: Generate Autonomous Fix
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
       - uses: actions/checkout@v4
