@@ -1,110 +1,161 @@
+import { useState } from 'react';
 import { useIncidentsList } from '../hooks/useIncidents';
 
 export default function Incidents() {
   const { data: incidents, isLoading, isError } = useIncidentsList();
+  const [activeFilter, setActiveFilter] = useState('All');
 
-  const getSeverityBadge = (severity) => {
-    const styles = {
-      CRITICAL: 'bg-red-500/10 text-red-400 border-red-500/20',
-      HIGH: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      MEDIUM: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      LOW: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  const filters = ['All', 'Critical', 'Investigating', 'Resolved'];
+
+  const getSeverityClass = (severity) => {
+    const map = {
+      CRITICAL: { bg: 'var(--color-red-bg)', color: 'var(--color-red)', border: 'rgba(232,69,60,0.2)' },
+      HIGH: { bg: 'var(--color-amber-bg)', color: 'var(--color-amber)', border: 'rgba(245,158,11,0.2)' },
+      MEDIUM: { bg: 'var(--color-blue-bg)', color: 'var(--color-blue)', border: 'rgba(59,130,246,0.2)' },
+      LOW: { bg: 'var(--color-green-bg)', color: 'var(--color-green)', border: 'rgba(16,185,129,0.2)' },
     };
-    return styles[severity] || styles.LOW;
+    return map[severity] || map.LOW;
   };
 
   const getStatusDot = (status) => {
-    if (status === 'Agent Investigating') return 'bg-amber-400';
-    if (status === 'Awaiting Approval') return 'bg-blue-400';
-    if (status === 'Resolved') return 'bg-emerald-400';
-    return 'bg-on-surface-variant';
+    if (status === 'Investigating') return { bg: 'var(--color-red)', shadow: '0 0 6px var(--color-red)', animate: true };
+    if (status === 'Correlating') return { bg: 'var(--color-blue)', shadow: 'none', animate: true };
+    if (status === 'Resolved') return { bg: 'var(--color-green)', shadow: 'none', animate: false };
+    if (status === 'Escalated') return { bg: 'var(--color-amber)', shadow: 'none', animate: false };
+    return { bg: 'var(--color-text3)', shadow: 'none', animate: false };
   };
 
   return (
-    <div className="p-6 lg:p-8 fade-in">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-on-surface mb-1">Active Incidents</h2>
-        <p className="text-sm text-on-surface-variant">Real-time overview of system anomalies and AI agent remediation.</p>
+    <div className="p-6 fade-in">
+      <div className="mb-6">
+        <h1 className="text-[22px] font-bold text-text mb-1" style={{ fontFamily: 'var(--font-head)' }}>Active Incidents</h1>
+        <p className="text-[13px] text-text2">Real-time overview of system anomalies and AI agent remediation.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 slide-up stagger-1">
-          <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Active Critical</p>
-          <p className="text-3xl font-black text-red-400">03</p>
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="bg-bg2 border border-border rounded-[10px] p-4 relative overflow-hidden transition-[border-color] duration-150 hover:border-border2 slide-up stagger-1">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-red" />
+          <div className="text-[9.5px] tracking-[0.1em] uppercase text-text3 mb-[10px]" style={{ fontFamily: 'var(--font-mono)' }}>Active Critical</div>
+          <div className="text-[32px] font-[800] text-red leading-none" style={{ fontFamily: 'var(--font-head)' }}>03</div>
+          <div className="text-[11px] text-text3 mt-[6px]" style={{ fontFamily: 'var(--font-mono)' }}>^ 1 since last hour</div>
         </div>
-        <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 slide-up stagger-2">
-          <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Mean Resolve Time</p>
-          <p className="text-3xl font-black text-on-surface">14<span className="text-base font-normal text-on-surface-variant ml-1">min</span></p>
+        <div className="bg-bg2 border border-border rounded-[10px] p-4 relative overflow-hidden transition-[border-color] duration-150 hover:border-border2 slide-up stagger-2">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-amber" />
+          <div className="text-[9.5px] tracking-[0.1em] uppercase text-text3 mb-[10px]" style={{ fontFamily: 'var(--font-mono)' }}>Mean Resolve Time</div>
+          <div className="text-[32px] font-[800] text-amber leading-none" style={{ fontFamily: 'var(--font-head)' }}>14<span className="text-[14px] font-normal ml-[2px] text-text2">min</span></div>
+          <div className="text-[11px] text-text3 mt-[6px]" style={{ fontFamily: 'var(--font-mono)' }}>v 3min vs yesterday</div>
         </div>
-        <div className="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/10 slide-up stagger-3">
-          <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Agent Participation</p>
-          <p className="text-3xl font-black text-emerald-400">98<span className="text-base font-normal text-on-surface-variant ml-1">%</span></p>
+        <div className="bg-bg2 border border-border rounded-[10px] p-4 relative overflow-hidden transition-[border-color] duration-150 hover:border-border2 slide-up stagger-3">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-green" />
+          <div className="text-[9.5px] tracking-[0.1em] uppercase text-text3 mb-[10px]" style={{ fontFamily: 'var(--font-mono)' }}>Agent Participation</div>
+          <div className="text-[32px] font-[800] text-green leading-none" style={{ fontFamily: 'var(--font-head)' }}>98<span className="text-[14px] font-normal ml-[2px] text-text2">%</span></div>
+          <div className="text-[11px] text-text3 mt-[6px]" style={{ fontFamily: 'var(--font-mono)' }}>7 agents active</div>
         </div>
       </div>
 
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden slide-up stagger-4">
+      <div className="bg-bg2 border border-border rounded-[10px] overflow-hidden slide-up stagger-4">
+        <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-border">
+          <div>
+            <div className="text-[14px] font-bold text-text" style={{ fontFamily: 'var(--font-head)' }}>Incident Feed</div>
+            <div className="text-[12px] text-text3" style={{ fontFamily: 'var(--font-mono)' }}>
+              {incidents ? `${incidents.length} incidents` : '...'} - synced 2s ago
+            </div>
+          </div>
+          <div className="flex gap-[6px]">
+            {filters.map((f) => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className="px-[10px] py-1 rounded-[20px] text-[11px] font-medium border cursor-pointer transition-all"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.04em',
+                  borderColor: activeFilter === f ? 'var(--color-accent)' : 'var(--color-border)',
+                  color: activeFilter === f ? 'var(--color-accent2)' : 'var(--color-text2)',
+                  background: activeFilter === f ? 'var(--color-accent-glow)' : 'transparent',
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {isLoading ? (
-          <div className="flex items-center justify-center py-20 text-on-surface-variant">
+          <div className="flex items-center justify-center py-20 text-text2">
             <span className="material-symbols-outlined animate-spin mr-3 text-[20px]">progress_activity</span>
             <span className="text-sm">Connecting to Agent Gateway...</span>
           </div>
         ) : isError ? (
-          <div className="flex items-center justify-center py-20 text-red-400">
+          <div className="flex items-center justify-center py-20 text-red">
             <span className="material-symbols-outlined mr-3 text-[20px]">error</span>
             <span className="text-sm">Failed to synchronize with Agent Gateway.</span>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-outline-variant/10">
-                  <th className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">ID</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Incident</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Severity</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {incidents.map((incident) => (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-[18px] py-[10px] text-left text-[10px] tracking-[0.1em] uppercase text-text3 font-medium whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>ID</th>
+                <th className="px-[18px] py-[10px] text-left text-[10px] tracking-[0.1em] uppercase text-text3 font-medium whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>Incident</th>
+                <th className="px-[18px] py-[10px] text-left text-[10px] tracking-[0.1em] uppercase text-text3 font-medium whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>Severity</th>
+                <th className="px-[18px] py-[10px] text-left text-[10px] tracking-[0.1em] uppercase text-text3 font-medium whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>Status</th>
+                <th className="px-[18px] py-[10px] text-right text-[10px] tracking-[0.1em] uppercase text-text3 font-medium whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {incidents.map((incident) => {
+                const sev = getSeverityClass(incident.severity);
+                const dot = getStatusDot(incident.status);
+                return (
                   <tr
                     key={incident.id}
-                    onClick={() => window.location.href = `/incident/${incident.id}`}
-                    className="border-b border-outline-variant/5 hover:bg-surface-container-high/30 transition-colors cursor-pointer"
+                    onClick={() => (window.location.href = `/incident/${incident.id}`)}
+                    className="border-b border-border cursor-pointer transition-[background] duration-100 hover:bg-bg3 last:border-b-0"
                   >
-                    <td className="px-5 py-4 font-mono text-xs text-on-surface-variant">{incident.id}</td>
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-on-surface">{incident.title}</p>
-                      <p className="text-xs text-on-surface-variant mt-0.5 font-mono">{incident.root_cause}</p>
+                    <td className="px-[18px] py-[14px] align-middle">
+                      <span className="text-[11px] text-text3" style={{ fontFamily: 'var(--font-mono)' }}>{incident.id}</span>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`text-[11px] font-bold px-2 py-1 rounded border ${getSeverityBadge(incident.severity)}`}>
+                    <td className="px-[18px] py-[14px] align-middle">
+                      <div className="text-[13.5px] font-semibold text-text mb-[2px]">{incident.title}</div>
+                      <div className="text-[11.5px] text-text3" style={{ fontFamily: 'var(--font-mono)' }}>{incident.root_cause}</div>
+                    </td>
+                    <td className="px-[18px] py-[14px] align-middle">
+                      <span
+                        className="inline-flex items-center gap-[5px] px-2 py-[3px] rounded text-[10.5px] font-bold tracking-[0.05em] uppercase"
+                        style={{ fontFamily: 'var(--font-mono)', background: sev.bg, color: sev.color, border: `1px solid ${sev.border}` }}
+                      >
                         {incident.severity}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${getStatusDot(incident.status)}`}></span>
-                        <span className="text-sm text-on-surface">{incident.status}</span>
+                    <td className="px-[18px] py-[14px] align-middle">
+                      <div className="flex items-center gap-[7px] text-[12.5px] text-text">
+                        <div
+                          className="w-[7px] h-[7px] rounded-full shrink-0"
+                          style={{ background: dot.bg, boxShadow: dot.shadow, animation: dot.animate ? 'pulse 1.5s infinite' : 'none' }}
+                        />
+                        {incident.status}
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-right text-xs text-on-surface-variant font-mono">{incident.time}</td>
+                    <td className="px-[18px] py-[14px] align-middle text-right text-[11.5px] text-text3 whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)' }}>
+                      {incident.time}
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
         )}
-        <div className="px-5 py-3 border-t border-outline-variant/10 flex items-center justify-between">
-          <span className="text-xs text-on-surface-variant">
-            {incidents ? `${incidents.length} active incidents` : 'Loading...'}
+
+        <div className="flex items-center justify-between px-[18px] py-3 border-t border-border">
+          <span className="text-[12px] text-text3" style={{ fontFamily: 'var(--font-mono)' }}>
+            {incidents ? `Showing ${incidents.length} incidents` : 'Loading...'}
           </span>
           <div className="flex gap-1">
-            <button className="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            <button className="w-7 h-7 rounded-[6px] border border-border bg-transparent text-text2 cursor-pointer flex items-center justify-center transition-all hover:bg-bg3 hover:border-border2 hover:text-text">
+              <span className="material-symbols-outlined text-[16px]">chevron_left</span>
             </button>
-            <button className="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            <button className="w-7 h-7 rounded-[6px] border border-border bg-transparent text-text2 cursor-pointer flex items-center justify-center transition-all hover:bg-bg3 hover:border-border2 hover:text-text">
+              <span className="material-symbols-outlined text-[16px]">chevron_right</span>
             </button>
           </div>
         </div>

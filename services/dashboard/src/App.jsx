@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSocket } from './hooks/useSocket'
-import { useTheme } from './context/ThemeContext'
 import Sidebar from './components/Sidebar'
 import TopNav from './components/TopNav'
 import AgentSidebar from './components/AgentSidebar'
@@ -9,24 +8,23 @@ import IncidentDetail from './pages/IncidentDetail'
 
 function App() {
   const [isAgentSidebarOpen, setIsAgentSidebarOpen] = useState(true)
-  const { isDark } = useTheme()
   useSocket()
 
   const path = window.location.pathname
   let Page = Incidents
   if (path === '/agents') {
-    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">AI Agents Panel</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-[22px] font-bold text-text" style={{ fontFamily: 'var(--font-head)' }}>AI Agents Panel</h1><p className="text-[13px] text-text2 mt-1">Monitor agent status and execution history.</p></div>
   } else if (path === '/logs') {
-    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">System Logs</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-[22px] font-bold text-text" style={{ fontFamily: 'var(--font-head)' }}>System Logs</h1><p className="text-[13px] text-text2 mt-1">Real-time log stream from all services.</p></div>
   } else if (path === '/settings') {
-    Page = () => <div className="p-8"><h1 className="text-2xl font-bold text-on-surface">Settings</h1></div>
+    Page = () => <div className="p-8"><h1 className="text-[22px] font-bold text-text" style={{ fontFamily: 'var(--font-head)' }}>Settings</h1><p className="text-[13px] text-text2 mt-1">Configure NightOwl preferences.</p></div>
   } else if (path.startsWith('/incident/')) {
     const incidentId = path.split('/')[2]
     Page = () => <IncidentDetail incidentId={incidentId} />
   }
 
   return (
-    <div className="h-screen flex overflow-hidden bg-surface">
+    <div className="h-screen flex overflow-hidden bg-bg">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <TopNav isAgentSidebarOpen={isAgentSidebarOpen} setIsAgentSidebarOpen={setIsAgentSidebarOpen} />
