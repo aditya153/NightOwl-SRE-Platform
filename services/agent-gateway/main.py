@@ -34,11 +34,16 @@ logger = logging.getLogger("nightowl.gateway")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("🦉 NightOwl Agent Gateway starting...")
+    logger.info("NightOwl Agent Gateway starting...")
     logger.info(f"   Environment: {settings.ENVIRONMENT}")
     logger.info(f"   Version:     {settings.API_VERSION}")
+
+    from database import engine, Base
+    from models_db import IncidentDB, AgentLogDB
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database tables verified/created.")
     
-    # Startup logic: Start Kafka Consumer task
     consumer_task = asyncio.create_task(consume_alerts())
     yield
     
