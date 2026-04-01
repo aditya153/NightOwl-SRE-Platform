@@ -161,6 +161,27 @@ async def get_incident(incident_id: str, db: AsyncSession = Depends(get_db)):
         ]
     }
 
+@app.put("/api/v1/incidents/{incident_id}", tags=["Incidents"])
+async def update_incident(incident_id: str, request: Request):
+    body = await request.json()
+    new_status = body.get("status", "Investigating")
+    logger.info(f"Incident {incident_id} status updated to: {new_status}")
+    return {
+        "incident_id": incident_id,
+        "status": new_status,
+        "message": f"Incident {incident_id} acknowledged and set to {new_status}.",
+    }
+
+@app.post("/api/v1/incidents/{incident_id}/fix", tags=["Incidents"])
+async def authorize_fix(incident_id: str):
+    logger.info(f"Fix authorized for incident {incident_id}. Dispatching Fixer Agent.")
+    return {
+        "incident_id": incident_id,
+        "status": "Fix Authorized",
+        "message": f"Fixer Agent dispatched for {incident_id}. Rollback sequence initiated.",
+        "assigned_agents": ["Fixer", "Compliance"],
+    }
+
 @app.get("/api/v1/agents", tags=["Agents"])
 async def list_agents():
     agents = [
