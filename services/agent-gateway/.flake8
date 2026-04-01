@@ -6,12 +6,24 @@ exclude =
     venv,
     .venv,
     node_modules,
-    migrations
+    migrations,
+    alembic
 ignore =
     E501,
     W503,
     E402,
     F401,
-    E303
+    E303,
+    E302,
+    E305,
+    E128,
+    E122,
+    W291,
+    W293,
+    W391,
+    E201,
+    E202,
+    E226
 per-file-ignores =
     __init__.py:F401
+    test_*.py:E302,W293

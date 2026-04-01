@@ -62,7 +62,7 @@ const iconStyles = {
   'icon-pink': { background: 'rgba(236,72,153,0.12)', color: '#f472b6' },
 };
 
-export default function AgentSidebar({ setIsOpen }) {
+export default function AgentSidebar() {
   const healthData = [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 2, 1, 1];
   const healthColors = { 0: 'var(--color-red)', 1: 'rgba(16,185,129,0.6)', 2: 'var(--color-blue)' };
 
