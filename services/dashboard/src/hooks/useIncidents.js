@@ -6,7 +6,7 @@ export const useIncidentsList = () => {
     queryKey: ['incidents'],
     queryFn: async () => {
       const response = await api.get('/incidents');
-      return response.data; // API now returns {"incidents": [], "total": 0} wrapper
+      return response.data.incidents; // Revert back to returning incidents array
     },
   });
 };
