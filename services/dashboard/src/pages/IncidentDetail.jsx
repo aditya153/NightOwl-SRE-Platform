@@ -1,4 +1,4 @@
-import { useIncidentDetails } from '../hooks/useIncidents';
+import { useIncidentDetails, useAcknowledgeIncident, useAuthorizeFix } from '../hooks/useIncidents';
 
 const iconStyles = {
   'icon-purple': { background: 'rgba(139,92,246,0.15)', color: '#a78bfa' },
@@ -9,6 +9,8 @@ const iconStyles = {
 
 export default function IncidentDetail({ incidentId }) {
   const { data, isLoading, isError } = useIncidentDetails(incidentId);
+  const { mutate: acknowledge, isPending: isAcking } = useAcknowledgeIncident();
+  const { mutate: authorizeFix, isPending: isFixing } = useAuthorizeFix();
 
   if (isLoading || !data) return (
     <div className="flex-1 flex items-center justify-center p-12 text-text2">
@@ -34,6 +36,8 @@ export default function IncidentDetail({ incidentId }) {
   };
 
   const sev = getSevStyle(data.severity);
+  const isResolved = data.status === 'Resolved';
+  const isActionable = !isResolved && data.status !== 'Investigating';
 
   return (
     <div className="p-6 fade-in">
@@ -58,7 +62,7 @@ export default function IncidentDetail({ incidentId }) {
             <span>-</span>
             <span>{data.time}</span>
             <span>-</span>
-            <span style={{ color: 'var(--color-amber)' }}>{data.status}</span>
+            <span style={{ color: isResolved ? 'var(--color-green)' : 'var(--color-amber)' }}>{data.status}</span>
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
@@ -66,12 +70,22 @@ export default function IncidentDetail({ incidentId }) {
             <div className="w-[7px] h-[7px] rounded-full bg-green" />
             Engaged
           </div>
-          <button className="bg-transparent text-text py-[7px] px-[14px] rounded-[6px] text-[12.5px] font-medium cursor-pointer transition-all hover:bg-bg3" style={{ border: '1px solid var(--color-border2)', fontFamily: 'var(--font-body)' }}>
-            Acknowledge
+          <button 
+            onClick={() => acknowledge(data.id)}
+            disabled={isResolved || isAcking}
+            className="bg-transparent text-text py-[7px] px-[14px] rounded-[6px] text-[12.5px] font-medium cursor-pointer transition-all hover:bg-bg3 disabled:opacity-50 disabled:cursor-not-allowed" 
+            style={{ border: '1px solid var(--color-border2)', fontFamily: 'var(--font-body)' }}
+          >
+            {isAcking ? 'Acknowledging...' : 'Acknowledge'}
           </button>
-          <button className="bg-green border-none text-black py-[7px] px-[14px] rounded-[6px] text-[12.5px] font-bold cursor-pointer flex items-center gap-[6px] transition-all hover:opacity-90" style={{ fontFamily: 'var(--font-body)' }}>
+          <button 
+            onClick={() => authorizeFix(data.id)}
+            disabled={!isActionable || isFixing}
+            className="bg-green border-none text-black py-[7px] px-[14px] rounded-[6px] text-[12.5px] font-bold cursor-pointer flex items-center gap-[6px] transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed" 
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
             <span className="material-symbols-outlined text-[15px]">build</span>
-            Authorize Fix
+            {isFixing ? 'Authorizing...' : 'Authorize Fix'}
           </button>
         </div>
       </div>
