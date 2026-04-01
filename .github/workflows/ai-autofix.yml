@@ -50,6 +50,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
+          pip install -r services/agent-gateway/requirements.txt
           export CI_ERROR_LOGS=$(cat ci-failure.log)
           python scripts/autofix.py
 
