@@ -6,6 +6,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - nightowl-net
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
@@ -14,6 +16,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - nightowl-net
 
   postgres:
     image: postgres:15-alpine
@@ -21,6 +25,39 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: nightowl
+    networks:
+      - nightowl-net
 
   qdrant:
     image: qdrant/qdrant:latest
+    networks:
+      - nightowl-net
+
+  event-dispatcher:
+    build: 
+      context: ./services/event-dispatcher
+    environment:
+      - NODE_ENV=production
+      - KAFKA_BROKER=kafka:9092
+    networks:
+      - nightowl-net
+
+  agent-gateway:
+    build:
+      context: ./services/agent-gateway
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - POSTGRES_URL=postgresql+asyncpg://postgres:password@postgres:5432/nightowl
+      - QDRANT_URL=http://qdrant:6333
+    networks:
+      - nightowl-net
+
+  dashboard:
+    build:
+      context: ./services/dashboard
+    networks:
+      - nightowl-net
+
+networks:
+  nightowl-net:
+    driver: bridge
