@@ -11,6 +11,8 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -25,36 +27,55 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: nightowl
+    ports:
+      - "5432:5432"
     networks:
       - nightowl-net
 
   qdrant:
     image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
     networks:
       - nightowl-net
 
   event-dispatcher:
     build: 
       context: ./services/event-dispatcher
+    depends_on:
+      - kafka
     environment:
       - NODE_ENV=production
       - KAFKA_BROKER=kafka:9092
+    ports:
+      - "4001:4001"
     networks:
       - nightowl-net
 
   agent-gateway:
     build:
       context: ./services/agent-gateway
+    depends_on:
+      - kafka
+      - postgres
+      - qdrant
     environment:
       - KAFKA_BROKER=kafka:9092
       - POSTGRES_URL=postgresql+asyncpg://postgres:password@postgres:5432/nightowl
       - QDRANT_URL=http://qdrant:6333
+    ports:
+      - "8000:8000"
     networks:
       - nightowl-net
 
   dashboard:
     build:
       context: ./services/dashboard
+    depends_on:
+      - agent-gateway
+      - event-dispatcher
+    ports:
+      - "3000:80"
     networks:
       - nightowl-net
 
