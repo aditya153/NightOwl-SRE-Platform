@@ -61,8 +61,20 @@ DANGEROUS_PATTERNS = [
 ]
 
 
-def validate_code(code_content: str) -> dict:
+def validate_code(code_content: str, file_path: str = "") -> dict:
     violations = []
+
+    if file_path:
+        filename = file_path.split("/")[-1].lower()
+        forbidden_configs = ["tox.ini", "pyproject.toml", ".flake8", "pytest.ini", "package.json", ".eslintrc", ".env", "requirements.txt"]
+        if filename in forbidden_configs or not file_path.endswith((".py", ".js", ".jsx", ".ts", ".tsx")):
+            violations.append({
+                "rule_id": "OWASP-CONFIG-001",
+                "name": "Forbidden Configuration Modification",
+                "severity": "CRITICAL",
+                "description": f"AI is strictly forbidden from creating or modifying configuration files like '{filename}'.",
+                "match_count": 1,
+            })
 
     for rule in DANGEROUS_PATTERNS:
         matches = re.findall(rule["pattern"], code_content, re.IGNORECASE | re.MULTILINE)

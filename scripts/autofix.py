@@ -140,7 +140,7 @@ CRITICAL RULES:
     
     # Run Layer 1: OWASP Safety Rules
     logger.info("Running OWASP Safety Rules context check...")
-    validation = validate_code(new_content)
+    validation = validate_code(new_content, file_path)
     
     if not validation["is_safe"]:
         logger.error("Fix blocked by OWASP Safety Rules Engine!")
