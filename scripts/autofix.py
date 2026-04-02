@@ -37,7 +37,7 @@ def call_llm(prompt: str) -> Optional[str]:
         "messages": [
             {
                 "role": "user",
-                "content": "You are an autonomous SRE fixing broken CI pipelines. Return exactly one JSON block containing the fields 'file_path' and 'new_content'. 'new_content' must be the complete, fixed file contents. Do not wrap the JSON in Markdown formatting (no ```json). Be precise."
+                "content": "You are an autonomous SRE fixing broken CI pipelines. Return exactly one JSON block containing the fields 'analysis', 'file_path', and 'new_content'. 'analysis' must contain step-by-step reasoning of the bug. 'new_content' must be the complete fixed file. Do not wrap JSON in markdown tags."
             },
             {
                 "role": "user",
@@ -108,9 +108,10 @@ def run_autofix(ci_logs: str) -> bool:
 {file_contexts}
 
 CRITICAL RULES:
-1. You may ONLY modify files that are listed in the 'ACTUAL FILE CONTENTS' section above.
-2. You are STRICTLY FORBIDDEN from generating new configuration files (like tox.ini, .flake8).
-3. Identify the exact file that caused the failure, fix the error, and return the ENTIRE fixed file.
+1. You MUST first write an 'analysis' string in your JSON explaining the exact syntax failure (e.g. mismatched bracket on line 256).
+2. You may ONLY modify files that are listed in the 'ACTUAL FILE CONTENTS' section above.
+3. You are STRICTLY FORBIDDEN from generating new configuration files (like tox.ini, .flake8, pyproject.toml).
+4. Identify the exact file that caused the failure, find the typo, fix the error, and return the ENTIRE fixed file.
 """
     
     response = call_llm(prompt)
