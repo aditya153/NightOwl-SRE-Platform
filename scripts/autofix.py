@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-MODEL = "deepseek-ai/deepseek-r1-distill-qwen-32b"
+MODEL = "meta/llama-3.3-70b-instruct"
 
 def call_llm(prompt: str) -> Optional[str]:
     if not NVIDIA_API_KEY:
