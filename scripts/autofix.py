@@ -65,7 +65,7 @@ import re
 
 def extract_file_contexts(ci_logs: str) -> str:
     """Extracts mentioned files from logs and appends their contents."""
-    pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|js|jsx|ts|tsx|ya?ml))"
+    pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|js|jsx|ts|tsx|ya?ml|json|toml|ini)|[a-zA-Z0-9_\-\./]*Dockerfile[a-zA-Z0-9_\-\./]*)"
     matches = re.findall(pattern, ci_logs)
     
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
