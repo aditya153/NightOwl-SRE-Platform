@@ -1,0 +1,15 @@
+[project]
+name = "my_cool_new_package"
+version = "0.1.0"
+description = "Add a short description here"
+authors = [
+    {name = "Example Author", email = "author@example.com"}
+]
+dependencies = [
+    "fastapi == 0.109.2",
+    "uvicorn == 0.29.0"
+]
+
+[tool.ruff]
+line-length = 120
+select = ["E", "W", "F", "I", "N", "UP", "B", "C4", "ARG", "SIM", "ERA", "PD", "PGH", "PL", "PT", "PYI", "RSE", "RUF", "S"]
