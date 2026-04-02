@@ -253,7 +253,7 @@ async def slack_interactions(request: Request, db: AsyncSession = Depends(get_db
         logger.error(f"Error processing Slack interaction: {e}")
         return {"status": "error"}
 
-def _get_agents_for_type(incident_type: IncidentType) -> list[str}
+def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
     agent_map = {
         IncidentType.INFRASTRUCTURE: ["Triage", "Log Analyst", "Correlator", "Fixer"],
         IncidentType.SECURITY: ["Triage", "Security", "Compliance"],

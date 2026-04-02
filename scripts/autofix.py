@@ -17,43 +17,45 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "google/gemini-2.0-flash-001"
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+MODEL = "deepseek-ai/deepseek-r1-distill-qwen-32b"
 
 def call_llm(prompt: str) -> Optional[str]:
-    if not OPENROUTER_API_KEY:
-        logger.error("OPENROUTER_API_KEY not found in environment.")
+    if not NVIDIA_API_KEY:
+        logger.error("NVIDIA_API_KEY not found in environment.")
         return None
 
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": f"Bearer {NVIDIA_API_KEY}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/aditya153/NightOwl-SRE-Platform",
-        "X-Title": "NightOwl AI Autofix"
+        "Accept": "application/json"
     }
 
     data = {
         "model": MODEL,
         "messages": [
             {
-                "role": "system",
-                "content": "You are an autonomous SRE fixing broken CI pipelines. Return exactly one JSON block containing the fields 'file_path' and 'new_content'. 'new_content' must be the complete, fixed file contents. Do not wrap the JSON in Markdown formatting (no ```json). Be precise. Do not introduce security vulnerabilities or race conditions."
+                "role": "user",
+                "content": "You are an autonomous SRE fixing broken CI pipelines. Return exactly one JSON block containing the fields 'file_path' and 'new_content'. 'new_content' must be the complete, fixed file contents. Do not wrap the JSON in Markdown formatting (no ```json). Be precise."
             },
             {
                 "role": "user",
                 "content": prompt
             }
-        ]
+        ],
+        "temperature": 0.6,
+        "top_p": 0.7,
+        "max_tokens": 4096
     }
 
-    req = urllib.request.Request(OPENROUTER_URL, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+    req = urllib.request.Request(NVIDIA_URL, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
     try:
         with urllib.request.urlopen(req) as response:
             result = json.loads(response.read().decode("utf-8"))
             return result["choices"][0]["message"]["content"]
     except urllib.error.URLError as e:
-        logger.error(f"Failed to call OpenRouter API: {e}")
+        logger.error(f"Failed to call NVIDIA API: {e}")
         if hasattr(e, 'read'):
             logger.error(e.read().decode('utf-8'))
         return None
