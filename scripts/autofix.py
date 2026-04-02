@@ -59,9 +59,57 @@ def call_llm(prompt: str) -> Optional[str]:
         return None
 
 
+import re
+
+def extract_file_contexts(ci_logs: str) -> str:
+    """Extracts mentioned files from logs and appends their contents."""
+    pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|js|jsx|ts|tsx|ya?ml))"
+    matches = re.findall(pattern, ci_logs)
+    
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    unique_files = set()
+    for match in matches:
+        clean_match = match.split("NightOwl-SRE-Platform/")[-1] if "NightOwl-SRE-Platform" in match else match
+        # Clean paths that start with '/' or './'
+        if clean_match.startswith("/"):
+            clean_match = clean_match[1:]
+        elif clean_match.startswith("./"):
+            clean_match = clean_match[2:]
+            
+        full_path = os.path.join(repo_root, clean_match)
+        if os.path.exists(full_path) and os.path.isfile(full_path):
+            unique_files.add(clean_match)
+            
+    if not unique_files:
+        return "No specific code files identified in the logs."
+        
+    context_str = "### ACTUAL FILE CONTENTS ###\n\n"
+    for file_path in unique_files:
+        full_path = os.path.join(repo_root, file_path)
+        try:
+            with open(full_path, "r") as f:
+                content = f.read()
+            context_str += f"--- {file_path} ---\n```\n{content}\n```\n\n"
+        except Exception as e:
+            logger.warning(f"Could not read {file_path}: {e}")
+            
+    return context_str
+
 def run_autofix(ci_logs: str) -> bool:
     logger.info("Analyzing CI logs to generate fix...")
-    prompt = f"The following CI pipeline failed:\n\n{ci_logs}\n\nIdentify the issue, the file that needs fixing, and provide the entire fixed file."
+    file_contexts = extract_file_contexts(ci_logs)
+    
+    prompt = f"""The following CI pipeline failed:
+
+{ci_logs}
+
+{file_contexts}
+
+CRITICAL RULES:
+1. You may ONLY modify files that are listed in the 'ACTUAL FILE CONTENTS' section above.
+2. You are STRICTLY FORBIDDEN from generating new configuration files (like tox.ini, .flake8).
+3. Identify the exact file that caused the failure, fix the error, and return the ENTIRE fixed file.
+"""
     
     response = call_llm(prompt)
     if not response:
