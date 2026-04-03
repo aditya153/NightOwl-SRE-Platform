@@ -93,38 +93,82 @@ Implemented a high-performance websocket stream using Socket.io between the Node
 ### 19. UI Polish, Responsive Design & Dark/Light Mode
 Finalized the Obsidian Nocturnal design system with comprehensive micro-animations (staggered fade-ins, hover-lift, hover-glow, scale-in), full responsive support (Mobile, Tablet, Desktop) with collapsible sidebar and adaptive grids, and a dark/light mode toggle powered by a custom `ThemeContext` with `localStorage` persistence and 30+ CSS design token remappings.
 
-## Development Progress
+### 20. CI/CD & Automated Linting Pipeline
+Established a robust GitHub Actions workflow for Continuous Integration. On every push or PR, the cloud spins up an isolated Ubuntu runner to automatically test the `agent-gateway` with Flake8/pytest, and the `dashboard` with ESLint/npm build, ensuring zero broken code merges into the `main` branch.
 
-- [x] Phase 1: Architecture & Documentation
-- [x] Phase 2: Agent Gateway (FastAPI + CrewAI + Triage Agent)
-- [x] Phase 3: Event Dispatcher (Node.js)
-- [x] Phase 4: MCP Tool Server
-- [/] Phase 5: AI Agents (In Progress)
-- [/] Phase 6: Frontend Dashboard (In Progress)
-- [ ] Phase 7: Observability & Monitoring
-- [ ] Phase 8: CI/CD & Deployment
+### 21. Dockerized Containerization
+Built optimized, multi-stage `Dockerfile` definitions for all microservices (Event Dispatcher, Agent Gateway, Dashboard). Configured the CI pipeline to automatically build and validate these images. The entire infrastructure can now be spun up consistently across any environment.
 
-## Getting Started
+### 22. Autonomous Fix Pipeline (The "Self-Healing" CI)
+Integrated Meta's Llama 3.3 70B model via NVIDIA NIMs as an autonomous CI/CD fixer. When the GitHub Actions pipeline crashes (e.g. syntax error, failed Docker build), NightOwl automatically extracts the failed logs and source files, and triggers the LLM. The AI writes a fix, and automatically opens a Pull Request back to the repository.
 
+### 23. OWASP Safety Engine
+Since LLMs can hallucinate destructive commands or lazy shortcuts, we built a deterministic Python guardrail system. Before any AI code is merged, the `OWASP-CONFIG-001` engine strictly scans the payload. If the AI attempts to rewrite a protected configuration file or execute forbidden shell logic, the pipeline is physically blocked.
+
+### 24. Chain of Thought Constraint (Day 30 Finale)
+To prevent the LLM from blindly guessing solutions, we enforced a strict JSON schema limitation on the LLM prompt. Before generating any code, the AI is physically required to output an `analysis` block detailing the step-by-step root cause. This "Chain of Thought" architecture forces the model to reason correctly before proposing a fix.
+
+## Setup Instructions for Contributors
+
+Welcome to the open-source NightOwl project. Please follow these steps to securely spin up the infrastructure for local development.
+
+### Prerequisites
+- Docker and Docker Compose installed.
+- Python 3.11+
+- Node.js v22+
+- Valid API keys for OpenRouter and NVIDIA NIM.
+
+### Local Infrastructure Setup
+
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/aditya153/NightOwl-SRE-Platform.git
 cd NightOwl-SRE-Platform
-python3 -m venv venv
-source venv/bin/activate
-pip install -r services/agent-gateway/requirements.txt
-cd services/agent-gateway
 ```
 
-Create a `services/agent-gateway/.env` file with your OpenRouter API key, then run:
-
+2. **Configure Environment Variables:**
+You must configure the required `.env` files for the microservices.
 ```bash
+cp services/agent-gateway/.env.example services/agent-gateway/.env
+cp services/event-dispatcher/.env.example services/event-dispatcher/.env
+```
+Ensure you paste your respective API keys inside `services/agent-gateway/.env`.
+
+3. **Boot the Dependencies:**
+Launch the underlying Kafka broker, Zookeeper, PostgreSQL, and Qdrant databases via Docker.
+```bash
+docker-compose up -d zookeeper kafka postgres qdrant
+```
+
+4. **Initialize the Agent Gateway (Python):**
+```bash
+cd services/agent-gateway
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-Open `http://localhost:8000/docs` for the Swagger UI.
+5. **Initialize the Event Dispatcher (Node.js):**
+Open a new terminal.
+```bash
+cd services/event-dispatcher
+npm ci
+npm run dev
+```
 
-> Project is actively being built in public. Follow the journey on [LinkedIn](https://linkedin.com).
+6. **Start the Frontend Dashboard (React):**
+Open a new terminal.
+```bash
+cd services/dashboard
+npm ci
+npm run dev
+```
+The dashboard will be available at `http://localhost:5173`.
+
+## Architecture Principles
+NightOwl is built on a "Platform-over-Prompt" philosophy. We assume AI models will occasionally hallucinate; therefore, the reliability of the platform is guaranteed by deterministic engineering (Schema Validation, OWASP Scanners, Human-in-the-Loop circuit breakers) rather than prompt engineering alone.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
