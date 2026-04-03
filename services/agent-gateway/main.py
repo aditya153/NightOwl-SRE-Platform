@@ -261,4 +261,4 @@ def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
         IncidentType.PERFORMANCE: ["Triage", "Correlator", "Log Analyst"],
         IncidentType.COMPLIANCE: ["Compliance", "Security"],
     }
-    return agent_map.get(incident_type, ["Triage"]
+    return agent_map.get(incident_type, ["Triage"])
