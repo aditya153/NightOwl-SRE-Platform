@@ -1,32 +1,30 @@
 @import "tailwindcss";
 
-@theme --color-bg: #08090c;
---color-bg2: #0d0f14;
---color-bg3: #111318;
---color-bg4: #161820;
---color-border: rgba(255, 255, 255, 0.06);
---color-border2: rgba(255, 255, 255, 0.1);
---color-text: #e8e9ef;
---color-text2: #7a7d8e;
---color-text3: #454759;
---color-accent: #5b6af0;
---color-accent2: #7b87f5;
---color-accent-glow: rgba(91, 106, 240, 0.15);
---color-red: #e8453c;
---color-red-bg: rgba(232, 69, 60, 0.1);
---color-amber: #f59e0b;
---color-amber-bg: rgba(245, 158, 11, 0.1);
---color-green: #10b981;
---color-green-bg: rgba(16, 185, 129, 0.08);
---color-blue: #3b82f6;
---color-blue-bg: rgba(59, 130, 246, 0.1);
+@theme {
+  --color-bg: #08090c;
+  --color-bg2: #0d0f14;
+  --color-bg3: #111318;
+  --color-bg4: #161820;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border2: rgba(255, 255, 255, 0.1);
+  --color-text: #e8e9ef;
+  --color-text2: #7a7d8e;
+  --color-text3: #454759;
+  --color-accent: #5b6af0;
+  --color-accent2: #7b87f5;
+  --color-accent-glow: rgba(91, 106, 240, 0.15);
+  --color-red: #e8453c;
+  --color-red-bg: rgba(232, 69, 60, 0.1);
+  --color-amber: #f59e0b;
+  --color-amber-bg: rgba(245, 158, 11, 0.1);
+  --color-green: #10b981;
+  --color-green-bg: rgba(16, 185, 129, 0.08);
+  --color-blue: #3b82f6;
+  --color-blue-bg: rgba(59, 130, 246, 0.1);
 
---font-head: 'Syne',
-sans-serif;
---font-body: 'DM Sans',
-sans-serif;
---font-mono: 'IBM Plex Mono',
-monospace;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
 }
 
 * {
