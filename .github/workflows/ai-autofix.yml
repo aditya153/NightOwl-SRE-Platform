@@ -20,29 +20,12 @@ jobs:
           fetch-depth: 0
 
       - name: Download log artifact
-        uses: actions/github-script@v7
+        continue-on-error: true
+        uses: actions/download-artifact@v4
         with:
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id
-            });
-            // Try formatting recent errors into a file via logs API if no artifact
-            // As a fallback, we grab jobs directly
-            const jobs = await github.rest.actions.listJobsForWorkflowRun({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id
-            });
-            const failedJobs = jobs.data.jobs.filter(j => j.conclusion === 'failure');
-            const fs = require('fs');
-            
-            let logSummary = "Workflow failed jobs:\n";
-            for (const job of failedJobs) {
-               logSummary += "Job: " + job.name + "\n";
-            }
-            fs.writeFileSync('ci-failure.log', logSummary);
+          name: ci-failure-log
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

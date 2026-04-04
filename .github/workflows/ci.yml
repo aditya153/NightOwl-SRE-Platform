@@ -22,7 +22,16 @@ jobs:
         run: pip install flake8
 
       - name: Lint agent-gateway
-        run: flake8 services/agent-gateway/ --config services/agent-gateway/.flake8
+        run: |
+          flake8 services/agent-gateway/ --config services/agent-gateway/.flake8 > ci-failure.log || true
+          if [ -s ci-failure.log ]; then cat ci-failure.log && exit 1; fi
+
+      - name: Upload agent-gateway lint failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-log
+          path: ci-failure.log
 
       - name: Set up Node
         uses: actions/setup-node@v4
