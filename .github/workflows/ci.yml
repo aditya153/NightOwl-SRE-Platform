@@ -22,16 +22,7 @@ jobs:
         run: pip install flake8
 
       - name: Lint agent-gateway
-        run: |
-          flake8 services/agent-gateway/ --config services/agent-gateway/.flake8 > ci-failure.log || true
-          if [ -s ci-failure.log ]; then cat ci-failure.log && exit 1; fi
-
-      - name: Upload agent-gateway lint failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-failure-log
-          path: ci-failure.log
+        run: flake8 services/agent-gateway/ --config services/agent-gateway/.flake8
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -87,17 +78,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build agent-gateway image
-        run: docker build -t nightowl-agent-gateway:ci ./services/agent-gateway > ci-failure.log 2>&1 || (cat ci-failure.log; exit 1)
+        run: docker build -t nightowl-agent-gateway:ci ./services/agent-gateway
 
       - name: Build dashboard image
-        run: docker build -t nightowl-dashboard:ci ./services/dashboard > ci-failure.log 2>&1 || (cat ci-failure.log; exit 1)
+        run: docker build -t nightowl-dashboard:ci ./services/dashboard
 
       - name: Build event-dispatcher image
-        run: docker build -t nightowl-event-dispatcher:ci ./services/event-dispatcher > ci-failure.log 2>&1 || (cat ci-failure.log; exit 1)
-
-      - name: Upload Docker failure log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-failure-log
-          path: ci-failure.log
+        run: docker build -t nightowl-event-dispatcher:ci ./services/event-dispatcher

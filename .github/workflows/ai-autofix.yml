@@ -19,13 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download log artifact
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: ci-failure-log
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fetch global failure logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh run view ${{ github.event.workflow_run.id }} --log-failed > ci-failure.log || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
