@@ -83,7 +83,19 @@ def extract_file_contexts(ci_logs: str) -> str:
             unique_files.add(clean_match)
             
     if not unique_files:
-        return "No specific code files identified in the logs."
+        if "docker build" in ci_logs.lower():
+            # Attempt to find which service failed building by reading docker build command
+            for line in ci_logs.split("\n"):
+                if "docker build" in line and "./services/" in line:
+                    service_dir = line.split("./services/")[-1].split(" ")[0].strip()
+                    guess_path = f"services/{service_dir}/Dockerfile"
+                    if os.path.exists(os.path.join(repo_root, guess_path)):
+                        unique_files.add(guess_path)
+                        logger.info(f"Fallback Dockerfile detection: Found {guess_path}")
+                        
+    if not unique_files:
+        logger.error("No specific code files identified in the logs. Aborting to prevent LLM hallucinations.")
+        return None
         
     context_str = "### ACTUAL FILE CONTENTS ###\n\n"
     for file_path in unique_files:
@@ -100,7 +112,10 @@ def extract_file_contexts(ci_logs: str) -> str:
 def run_autofix(ci_logs: str) -> bool:
     logger.info("Analyzing CI logs to generate fix...")
     file_contexts = extract_file_contexts(ci_logs)
-    
+    if not file_contexts:
+        logger.error("Aborting autofix: No extracted codebase contexts exist to feed the LLM.")
+        return False
+        
     prompt = f"""The following CI pipeline failed:
 
 {ci_logs}
