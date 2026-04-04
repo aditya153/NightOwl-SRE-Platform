@@ -5,12 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime
 import logging
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import get_db
 from models_db import IncidentDB
-
 from config import settings
 from models import (
     IncidentEvent,
@@ -35,20 +33,17 @@ logger = logging.getLogger("nightowl.gateway")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("NightOwl Agent Gateway starting...")
-    logger.info(f"   Environment: {settings.ENVIRONMENT}")
-    logger.info(f"   Version:     {settings.API_VERSION}")
-
+    logger.info(f" Environment: {settings.ENVIRONMENT}")
+    logger.info(f" Version: {settings.API_VERSION}")
     from database import engine, Base
     from models_db import IncidentDB, AgentLogDB
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables verified/created.")
-    
     consumer_task = asyncio.create_task(consume_alerts())
     yield
-    
     # Shutdown logic
-    logger.info("🦉 NightOwl Agent Gateway shutting down...")
+    logger.info(" NightOwl Agent Gateway shutting down...")
     consumer_task.cancel()
     try:
         await consumer_task
@@ -95,9 +90,9 @@ async def root():
     tags=["Incidents"],
 )
 async def create_incident(event: IncidentEvent):
-    logger.info(f"📨 New incident: {event.title}")
-    logger.info(f"   Severity: {event.severity.value} | Type: {event.incident_type.value}")
-    logger.info(f"   Source: {event.source}")
+    logger.info(f" New incident: {event.title}")
+    logger.info(f" Severity: {event.severity.value} | Type: {event.incident_type.value}")
+    logger.info(f" Source: {event.source}")
     agents = _get_agents_for_type(event.incident_type)
     return IncidentResponse(
         incident_id=f"NO-{event.source.upper()[:3]}-{datetime.utcnow().strftime('%H%M%S')}",
@@ -111,22 +106,23 @@ async def create_incident(event: IncidentEvent):
 async def list_incidents(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(IncidentDB).order_by(IncidentDB.created_at.desc()).limit(50))
     incidents = result.scalars().all()
-    
     if not incidents:
-        return {"incidents": [
-            {
-                "id": "INC-8821",
-                "title": "API Gateway OOMKilled",
-                "severity": "CRITICAL",
-                "status": "Investigating",
-                "time": "2m ago",
-                "root_cause": "us-east-1 | cluster-prod-01",
-                "description": "Mocked fallback data for empty DB.",
-                "agentChats": [],
-                "infrastructure": []
-            }
-        ], "total": 1}
-        
+        return {
+            "incidents": [
+                {
+                    "id": "INC-8821",
+                    "title": "API Gateway OOMKilled",
+                    "severity": "CRITICAL",
+                    "status": "Investigating",
+                    "time": "2m ago",
+                    "root_cause": "us-east-1 | cluster-prod-01",
+                    "description": "Mocked fallback data for empty DB.",
+                    "agentChats": [],
+                    "infrastructure": []
+                }
+            ],
+            "total": 1
+        }
     incident_list = [
         {
             "id": f"INC-{inc.id}",
@@ -154,10 +150,20 @@ async def get_incident(incident_id: str, db: AsyncSession = Depends(get_db)):
         "root_cause": "us-east-1 | cluster-prod-01",
         "description": f"Fetched live from FastAPI. Detailed info for {incident_id}.",
         "agentChats": [
-            { "sender": 'Triage Bot', "role": 'L7 Matcher', "time": '10:41 AM', "message": '> Alert received via FastAPI.', "icon": 'robot', "class": 'text-tertiary bg-tertiary-container/20' }
+            {
+                "sender": 'Triage Bot',
+                "role": 'L7 Matcher',
+                "time": '10:41 AM',
+                "message": '> Alert received via FastAPI.',
+                "icon": 'robot',
+                "class": 'text-tertiary bg-tertiary-container/20'
+            }
         ],
         "infrastructure": [
-            { "label": "API Response", "value": "200 OK" }
+            {
+                "label": "API Response",
+                "value": "200 OK"
+            }
         ]
     }
 
@@ -224,19 +230,16 @@ async def slack_interactions(request: Request, db: AsyncSession = Depends(get_db
     payload_str = form_data.get("payload")
     if not payload_str:
         return {"status": "error", "message": "No payload"}
-        
     try:
         payload = json.loads(payload_str)
         user = payload.get("user", {}).get("username", "Unknown")
         actions = payload.get("actions", [])
         if not actions:
             return {"status": "ignored"}
-            
         action = actions[0]
         value_data = json.loads(action.get("value", "{}"))
         incident_id = value_data.get("incident_id")
         decision = value_data.get("action")
-        
         if incident_id and decision:
             incident = await db.get(IncidentDB, incident_id)
             if incident:
@@ -247,8 +250,7 @@ async def slack_interactions(request: Request, db: AsyncSession = Depends(get_db
                     incident.status = "rejected"
                     logger.info(f"[Slack] Incident {incident_id} REJECTED by {user}")
                 await db.commit()
-                
-        return {"status": "success"}
+                return {"status": "success"}
     except Exception as e:
         logger.error(f"Error processing Slack interaction: {e}")
         return {"status": "error"}
@@ -261,4 +263,4 @@ def _get_agents_for_type(incident_type: IncidentType) -> list[str]:
         IncidentType.PERFORMANCE: ["Triage", "Correlator", "Log Analyst"],
         IncidentType.COMPLIANCE: ["Compliance", "Security"],
     }
-    return agent_map.get(incident_type, ["Triage"]
+    return agent_map.get(incident_type, ["Triage"])
