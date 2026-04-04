@@ -58,6 +58,13 @@ DANGEROUS_PATTERNS = [
         "severity": "MEDIUM",
         "description": "Debug mode enabled. Disable before deploying to production.",
     },
+    {
+        "id": "OWASP-DOCKER-001",
+        "name": "Malicious Payload Detected in Docker",
+        "pattern": r"(curl\s|wget\s|bash\s-c|sh\s-c|nc\s|chmod\s|chown\s)",
+        "severity": "CRITICAL",
+        "description": "Arbitrary command execution or malicious payloads are restricted in Dockerfiles building on an autonomous CI.",
+    },
 ]
 
 
@@ -67,7 +74,7 @@ def validate_code(code_content: str, file_path: str = "") -> dict:
     if file_path:
         filename = file_path.split("/")[-1].lower()
         forbidden_configs = ["tox.ini", "pyproject.toml", ".flake8", "pytest.ini", "package.json", ".eslintrc", ".env", "requirements.txt"]
-        if filename in forbidden_configs or not file_path.endswith((".py", ".js", ".jsx", ".ts", ".tsx")):
+        if filename in forbidden_configs or (not file_path.endswith((".py", ".js", ".jsx", ".ts", ".tsx")) and filename != "dockerfile"):
             violations.append({
                 "rule_id": "OWASP-CONFIG-001",
                 "name": "Forbidden Configuration Modification",
