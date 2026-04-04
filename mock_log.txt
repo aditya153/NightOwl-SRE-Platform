@@ -1,0 +1,2 @@
+flake8 services/agent-gateway/main.py
+services/agent-gateway/main.py:256:60: E999 SyntaxError: invalid syntax
