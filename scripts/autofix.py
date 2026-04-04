@@ -64,12 +64,17 @@ def call_llm(prompt: str) -> Optional[str]:
 import re
 
 def extract_file_contexts(ci_logs: str) -> str:
-    """Extracts mentioned files from logs and appends their contents."""
+    # 0. Clean ANSI escape codes from gh run output
+    ansi_escape = re.compile(r'\x1b\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]')
+    clean_logs = ansi_escape.sub('', ci_logs)
+    
+    # 1. Regex to find any mentioned file paths
     pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|js|jsx|ts|tsx|ya?ml|json|toml|ini)|[a-zA-Z0-9_\-\./]*Dockerfile[a-zA-Z0-9_\-\./]*)"
-    matches = re.findall(pattern, ci_logs)
+    matches = re.findall(pattern, clean_logs)
     
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     unique_files = set()
+    
     for match in matches:
         clean_match = match.split("NightOwl-SRE-Platform/")[-1] if "NightOwl-SRE-Platform" in match else match
         # Clean paths that start with '/' or './'
