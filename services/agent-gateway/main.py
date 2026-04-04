@@ -99,7 +99,7 @@ async def create_incident(event: IncidentEvent):
         status="received",
         severity=event.severity,
         assigned_agents=agents,
-        message=f"Incident received. Dispatching agents: {', '.join(agents)}",
+        message=f"Incident received. Dispatching agents: {', '.join(agents)}"
     )
 
 @app.get("/api/v1/incidents", tags=["Incidents"])
