@@ -69,7 +69,7 @@ def extract_file_contexts(ci_logs: str) -> str:
     clean_logs = ansi_escape.sub('', ci_logs)
     
     # 1. Regex to find any mentioned file paths
-    pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|js|jsx|ts|tsx|ya?ml|json|toml|ini)|[a-zA-Z0-9_\-\./]*Dockerfile[a-zA-Z0-9_\-\./]*)"
+    pattern = r"([a-zA-Z0-9_\-\./]+\.(?:py|jsx|js|tsx|ts|ya?ml|json|toml|ini)|[a-zA-Z0-9_\-\./]*Dockerfile[a-zA-Z0-9_\-\./]*)"
     matches = re.findall(pattern, clean_logs)
     
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
