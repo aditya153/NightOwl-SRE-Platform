@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "anthropic/claude-opus-4.6"
+MODEL = "qwen/qwen3-coder:free"
 
 def call_llm(prompt: str) -> Optional[str]:
     if not OPENROUTER_API_KEY:
