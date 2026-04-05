@@ -17,17 +17,17 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-MODEL = "meta/llama-3.3-70b-instruct"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+MODEL = "anthropic/claude-opus-4.6"
 
 def call_llm(prompt: str) -> Optional[str]:
-    if not NVIDIA_API_KEY:
-        logger.error("NVIDIA_API_KEY not found in environment.")
+    if not OPENROUTER_API_KEY:
+        logger.error("OPENROUTER_API_KEY not found in environment.")
         return None
 
     headers = {
-        "Authorization": f"Bearer {NVIDIA_API_KEY}",
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
@@ -44,18 +44,17 @@ def call_llm(prompt: str) -> Optional[str]:
                 "content": prompt
             }
         ],
-        "temperature": 0.6,
-        "top_p": 0.7,
-        "max_tokens": 4096
+        "temperature": 0.3,
+        "max_tokens": 16384
     }
 
-    req = urllib.request.Request(NVIDIA_URL, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+    req = urllib.request.Request(OPENROUTER_URL, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
     try:
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=120) as response:
             result = json.loads(response.read().decode("utf-8"))
             return result["choices"][0]["message"]["content"]
     except urllib.error.URLError as e:
-        logger.error(f"Failed to call NVIDIA API: {e}")
+        logger.error(f"Failed to call OpenRouter API: {e}")
         if hasattr(e, 'read'):
             logger.error(e.read().decode('utf-8'))
         return None
