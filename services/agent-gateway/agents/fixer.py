@@ -109,5 +109,5 @@ def run_fixer(incident_context: str) -> dict:
         return {
             "error": "Failed to parse LLM Output",
             "raw_output": raw_text,
-            "requires_human_approval": 
+            "requires_human_approval": True
         }
