@@ -30,4 +30,4 @@ def scale_up_replicas(deployment_name: str, current_replicas: int, new_replicas:
     Simulates increasing the replica count for a deployment under heavy load.
     Considered medium/low risk depending on infrastructure capacity.
     """
-    return f"Scaled {deployment_name} from {current_replicas} to {new_replicas} replicas.
+    return f"Scaled {deployment_name} from {current_replicas} to {new_replicas} replicas."
